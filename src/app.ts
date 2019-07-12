@@ -5,6 +5,7 @@ import { fromEvent } from './sources/fromEvent';
 import { tap } from './operators/tap';
 import { map } from './operators/map';
 import { filter } from './operators/filter';
+import { find } from './operators/find';
 import { scan } from './operators/scan';
 import { reduce } from './operators/reduce';
 import { take } from './operators/take';
@@ -35,9 +36,11 @@ import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag
 
 pipe(
   fromEvent(window, 'click'),
-  // tap(event => console.log(event)),
   count(),
-  throttle(500, { leading: true, trailing: true }),
-  tap(v => console.log('COUNT', v)),
+  tap(c => console.log('COUNT', c)),
+  filter(c => c % 2 === 0),
+  tap(v => console.log('FILTERED', v)),
+  find(c => c % 2 === 0),
+  tap(v => console.log('FINDED', v)),
   // finishAfter(5000),
 )(0, () => {});
