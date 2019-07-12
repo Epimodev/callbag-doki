@@ -1,6 +1,7 @@
 import { pipe } from './utils/pipe';
 import { of } from './sources/of';
 import { interval } from './sources/interval';
+import { fromEvent } from './sources/fromEvent';
 import { tap } from './operators/tap';
 import { map } from './operators/map';
 import { filter } from './operators/filter';
@@ -23,9 +24,16 @@ import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag
 //   finishAfter(10000),
 // )(0, () => {});
 
+// pipe(
+//   of(10, 20, 30, 40, 5, 60, 70, 180, 90, 10),
+//   min(),
+//   tap(v => console.log('VALUE', v)),
+//   // reduce((acc, v) => acc + v, 0),
+// )(0, () => {});
+
 pipe(
-  of(10, 20, 30, 40, 5, 60, 70, 180, 90, 10),
-  min(),
-  tap(v => console.log('VALUE', v)),
-  // reduce((acc, v) => acc + v, 0),
+  fromEvent(window, 'keypress'),
+  tap(event => console.log(event.key)),
+  count(),
+  finishAfter(5000),
 )(0, () => {});
