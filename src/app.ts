@@ -13,6 +13,7 @@ import { min } from './operators/min';
 import { max } from './operators/max';
 import { delay } from './operators/delay';
 import { debounce } from './operators/debounce';
+import { throttle } from './operators/throttle';
 import { finishAfter } from './operators/finishAfter';
 import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from './types';
 
@@ -35,8 +36,8 @@ import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag
 pipe(
   fromEvent(window, 'click'),
   // tap(event => console.log(event)),
-  // count(),
-  debounce(500),
-  tap(v => console.log('EVENT', v)),
-  finishAfter(5000),
+  count(),
+  throttle(500, { leading: true, trailing: true }),
+  tap(v => console.log('COUNT', v)),
+  // finishAfter(5000),
 )(0, () => {});
