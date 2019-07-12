@@ -12,6 +12,7 @@ import { count } from './operators/count';
 import { min } from './operators/min';
 import { max } from './operators/max';
 import { delay } from './operators/delay';
+import { debounce } from './operators/debounce';
 import { finishAfter } from './operators/finishAfter';
 import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from './types';
 
@@ -26,14 +27,16 @@ import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag
 
 // pipe(
 //   of(10, 20, 30, 40, 5, 60, 70, 180, 90, 10),
-//   min(),
+//   map(v => v * 2),
 //   tap(v => console.log('VALUE', v)),
 //   // reduce((acc, v) => acc + v, 0),
 // )(0, () => {});
 
 pipe(
-  fromEvent(window, 'keypress'),
-  tap(event => console.log(event.key)),
-  count(),
+  fromEvent(window, 'click'),
+  // tap(event => console.log(event)),
+  // count(),
+  debounce(500),
+  tap(v => console.log('EVENT', v)),
   finishAfter(5000),
 )(0, () => {});
