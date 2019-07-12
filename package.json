@@ -1,0 +1,37 @@
+{
+  "name": "react-parcel-boilerplate",
+  "version": "1.0.0",
+  "description": "Boilerplate to create react app with parcel",
+  "main": "src/index.html",
+  "author": "Frederic Godin",
+  "license": "MIT",
+  "engines": {
+    "node": ">=11.7.0"
+  },
+  "engineStrict": true,
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "rm -rf ./dist && parcel build src/index.html",
+    "lint": "tslint -c tslint.json 'src/**/*.ts?(x)'",
+    "check-format": "prettier --list-different 'src/**/*.ts?(x)'"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint && yarn check-format"
+    }
+  },
+  "alias": {
+    "src": "./src"
+  },
+  "devDependencies": {
+    "husky": "^3.0.0",
+    "parcel-bundler": "^1.12.3",
+    "parcel-plugin-bundle-visualiser": "^1.2.0",
+    "parcel-plugin-compress": "^1.0.10",
+    "prettier": "^1.18.2",
+    "tslint": "^5.18.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {}
+}

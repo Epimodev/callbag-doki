@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "sourceMap": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "skipLibCheck": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es5",
+    "jsx": "react",
+    "jsxFactory": "createElement",
+    "lib": [
+      "dom",
+      "es5",
+      "es6"
+    ],
+    "typeRoots" : [
+      "./node_modules/@types",
+      "./types"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "*": ["*"]
+    }
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "./dist",
+    "node_modules"
+  ]
+}
