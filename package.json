@@ -1,7 +1,7 @@
 {
-  "name": "react-parcel-boilerplate",
-  "version": "1.0.0",
-  "description": "Boilerplate to create react app with parcel",
+  "name": "callbag-doki",
+  "version": "0.1.0",
+  "description": "lib to create observable and iterable based on callbag specs",
   "main": "src/index.html",
   "author": "Frederic Godin",
   "license": "MIT",
