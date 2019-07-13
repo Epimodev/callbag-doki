@@ -1,6 +1,5 @@
-import subscribe from 'callbag-subscribe';
-import pipe from 'callbag-pipe';
-
+import pipe from './utils/pipe';
+import subscribe from './utils/subscribe';
 import fromEvent from './sources/fromEvent';
 import count from './operators/count';
 import map from './operators/map';
@@ -27,12 +26,12 @@ const source = pipe(
   map(v => v),
 );
 
-const dispose = subscribe<number>({
+const unsubscribe = subscribe(source)({
   next: v => console.log('VALUE', v),
   error: error => console.log('ERROR', error),
   complete: () => console.log('COMPLETE'),
-})(source);
+});
 
 setTimeout(() => {
-  dispose();
+  unsubscribe();
 }, 5000);

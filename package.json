@@ -36,8 +36,6 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
-    "callbag": "^1.2.0",
-    "callbag-pipe": "^1.2.0",
-    "callbag-subscribe": "^1.5.1"
+    "callbag": "^1.2.0"
   }
 }
