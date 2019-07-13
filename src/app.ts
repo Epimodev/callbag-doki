@@ -17,7 +17,6 @@ import { delay } from './operators/delay';
 import { debounce } from './operators/debounce';
 import { throttle } from './operators/throttle';
 import { finishAfter } from './operators/finishAfter';
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from './types';
 
 // pipe(
 //   interval(1000),

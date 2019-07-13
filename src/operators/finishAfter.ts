@@ -1,14 +1,21 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from '../types';
+import {
+  CALLBAG_START,
+  CALLBAG_RECEIVE,
+  CALLBAG_FINISHING,
+  CallbagType,
+  Callbag,
+  Sink,
+} from '../types';
 import { createOperator, CreateOperatorParam } from './';
 
 function finishAfterFunc<T>(duration: number): CreateOperatorParam<T, T> {
   let timeout = 0;
   let finished = false;
 
-  return (output: Callbag<T>): Callbag<T> => (type: CallbagType, payload: any) => {
+  return (output: Sink<T>): Sink<T> => (type: CallbagType, payload: any) => {
     switch (type) {
       case CALLBAG_START:
-        const talkback: Callbag = (t: CallbagType, p: any) => {
+        const talkback: Callbag<void, T> = (t: CallbagType, p: any) => {
           if (t === CALLBAG_FINISHING) {
             clearTimeout(timeout);
           }

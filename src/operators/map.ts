@@ -1,8 +1,8 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from '../types';
+import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../types';
 import { createOperator, CreateOperatorParam } from './';
 
 function mapFunc<I, O>(mapper: (value: I) => O): CreateOperatorParam<I, O> {
-  return (output: Callbag<O>): Callbag<I> => (type: CallbagType, payload: any) => {
+  return (output: Sink<O>): Sink<I> => (type: CallbagType, payload: any) => {
     switch (type) {
       case CALLBAG_START:
         output(type, payload);

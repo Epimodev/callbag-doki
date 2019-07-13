@@ -1,20 +1,27 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from '../types';
+import {
+  CALLBAG_START,
+  CALLBAG_RECEIVE,
+  CALLBAG_FINISHING,
+  CallbagType,
+  Callbag,
+  Sink,
+} from '../types';
 import { createOperator, CreateOperatorParam } from './';
 
 function takeFunc<T>(max: number): CreateOperatorParam<T, T> {
   let taken = 0;
-  let sourceTalkback: Callbag<T>;
+  let sourceTalkback: Callbag<void, T>;
   let finished = false;
   let outputCalled = false;
 
-  const talkback: Callbag = (type: CallbagType, payload: any) => {
+  const talkback: Callbag<void, T> = (type: CallbagType, payload: any) => {
     if (type === CALLBAG_FINISHING) {
       finished = true;
     }
     sourceTalkback(type as any, payload);
   };
 
-  return (output: Callbag<T>): Callbag<T> => (type: CallbagType, payload: any) => {
+  return (output: Sink<T>): Sink<T> => (type: CallbagType, payload: any) => {
     switch (type) {
       case CALLBAG_START:
         sourceTalkback = payload;

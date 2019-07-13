@@ -13,6 +13,7 @@
     "start": "parcel src/index.html",
     "build": "rm -rf ./dist && parcel build src/index.html",
     "lint": "tslint -c tslint.json 'src/**/*.ts?(x)'",
+    "check-types": "tsc --noEmit",
     "check-format": "prettier --list-different 'src/**/*.ts?(x)'"
   },
   "husky": {

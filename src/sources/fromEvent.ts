@@ -2,29 +2,30 @@ import {
   CALLBAG_START,
   CALLBAG_RECEIVE,
   CALLBAG_FINISHING,
-  CallbagGreets,
-  Callbag,
   CallbagType,
+  Source,
+  Sink,
 } from '../types';
 
 function fromEvent<K extends keyof WindowEventMap>(
   target: Window,
   eventType: K,
   options?: boolean | AddEventListenerOptions,
-): CallbagGreets<WindowEventMap[K]>;
+): Source<WindowEventMap[K]>;
 
 function fromEvent<K extends keyof HTMLElementEventMap>(
   target: HTMLElement,
   eventType: K,
   options?: boolean | AddEventListenerOptions,
-): CallbagGreets<HTMLElementEventMap[K]>;
+): Source<HTMLElementEventMap[K]>;
 
 function fromEvent(
   target: EventTarget,
   eventType: string,
   options?: boolean | AddEventListenerOptions,
-): CallbagGreets<Event> {
-  return (start: CallbagType, sink: Callbag<Event>) => {
+): Source<Event> {
+  // @ts-ignore
+  return (start: CallbagType, sink: Sink<Event>) => {
     if (start === CALLBAG_START) {
       const handler = (event: Event) => {
         sink(CALLBAG_RECEIVE, event);

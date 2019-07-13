@@ -1,10 +1,10 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from '../types';
+import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../types';
 import { createOperator, CreateOperatorParam } from './';
 
 function findFunc<I>(func: (value: I) => boolean): CreateOperatorParam<I, I> {
   let finded = false;
 
-  return (output: Callbag<I>): Callbag<I> => (type: CallbagType, payload: any) => {
+  return (output: Sink<I>): Sink<I> => (type: CallbagType, payload: any) => {
     switch (type) {
       case CALLBAG_START:
         output(type, payload);

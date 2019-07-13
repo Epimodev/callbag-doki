@@ -1,10 +1,11 @@
-import { CALLBAG_START, CallbagType, CallbagGreets, Callbag, CallbagOperator } from '../types';
+import { CALLBAG_START, CallbagType, Source, Sink, Operator } from '../types';
 
-export type CreateOperatorParam<I, O> = (output: Callbag<O>) => Callbag<I>;
+export type CreateOperatorParam<I, O> = (output: Sink<O>) => Sink<I>;
 
-export function createOperator<I, O>(fn: CreateOperatorParam<I, O>): CallbagOperator<I, O> {
-  return (input: CallbagGreets<I>): CallbagGreets<O> => {
-    return (start: CallbagType, output: Callbag<O>) => {
+export function createOperator<I, O>(fn: CreateOperatorParam<I, O>): Operator<I, O> {
+  return (input: Source<I>): Source<O> => {
+    // @ts-ignore
+    return (start: CallbagType, output: Sink<O>) => {
       if (start === CALLBAG_START) {
         input(CALLBAG_START, fn(output));
       }

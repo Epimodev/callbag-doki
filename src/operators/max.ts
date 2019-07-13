@@ -1,13 +1,10 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from '../types';
+import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../types';
 import { createOperator, CreateOperatorParam } from './';
 
 function maxFunc(): CreateOperatorParam<number, number | undefined> {
   let max: number;
 
-  return (output: Callbag<number | undefined>): Callbag<number> => (
-    type: CallbagType,
-    payload: any,
-  ) => {
+  return (output: Sink<number | undefined>): Sink<number> => (type: CallbagType, payload: any) => {
     switch (type) {
       case CALLBAG_START:
         output(type, payload);

@@ -1,8 +1,8 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from '../types';
+import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../types';
 import { createOperator, CreateOperatorParam } from './';
 
 function filterFunc<T>(predicate: (value: T) => boolean): CreateOperatorParam<T, T> {
-  return (output: Callbag<T>): Callbag<T> => (type: CallbagType, payload: any) => {
+  return (output: Sink<T>): Sink<T> => (type: CallbagType, payload: any) => {
     switch (type) {
       case CALLBAG_START:
         output(type, payload);

@@ -1,10 +1,10 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Callbag } from '../types';
+import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../types';
 import { createOperator, CreateOperatorParam } from './';
 
 function countFunc<I>(): CreateOperatorParam<I, number> {
   let count = 0;
 
-  return (output: Callbag<number>): Callbag<I> => (type: CallbagType, payload: any) => {
+  return (output: Sink<number>): Sink<I> => (type: CallbagType, payload: any) => {
     switch (type) {
       case CALLBAG_START:
         output(type, payload);
