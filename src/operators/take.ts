@@ -5,7 +5,7 @@ import {
   CallbagType,
   Callbag,
   Sink,
-} from '../types';
+} from '../index';
 import { createOperator, CreateOperatorParam } from './';
 
 function takeFunc<T>(max: number): CreateOperatorParam<T, T> {

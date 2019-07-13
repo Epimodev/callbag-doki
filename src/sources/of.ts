@@ -5,7 +5,7 @@ import {
   CallbagType,
   Source,
   Sink,
-} from '../types';
+} from '../index';
 
 function of<T>(...values: T[]): Source<T> {
   // @ts-ignore

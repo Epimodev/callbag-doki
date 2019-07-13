@@ -1,4 +1,4 @@
-import { CALLBAG_START, CallbagType, Source, Sink, Operator } from '../types';
+import { CALLBAG_START, CallbagType, Source, Sink, Operator } from '../index';
 
 export type CreateOperatorParam<I, O> = (output: Sink<O>) => Sink<I>;
 

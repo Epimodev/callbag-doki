@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
-    "sourceMap": true,
+    "outDir": "./module",
+    "sourceMap": false,
+    "declaration": true,
     "strict": true,
     "noUnusedLocals": true,
     "skipLibCheck": true,
-    "module": "esnext",
+    "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
-    "jsx": "react",
-    "jsxFactory": "createElement",
     "lib": [
       "dom",
       "es5",

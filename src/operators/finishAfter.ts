@@ -5,7 +5,7 @@ import {
   CallbagType,
   Callbag,
   Sink,
-} from '../types';
+} from '../index';
 import { createOperator, CreateOperatorParam } from './';
 
 function finishAfterFunc<T>(duration: number): CreateOperatorParam<T, T> {

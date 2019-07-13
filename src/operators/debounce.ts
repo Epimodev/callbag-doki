@@ -5,7 +5,7 @@ import {
   CallbagType,
   Callbag,
   Sink,
-} from '../types';
+} from '../index';
 import { createOperator, CreateOperatorParam } from './';
 
 function debounceFunc<I>(duration: number): CreateOperatorParam<I, I> {

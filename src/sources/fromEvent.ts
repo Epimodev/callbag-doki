@@ -5,7 +5,7 @@ import {
   CallbagType,
   Source,
   Sink,
-} from '../types';
+} from '../index';
 
 function fromEvent<K extends keyof WindowEventMap>(
   target: Window,
@@ -18,6 +18,12 @@ function fromEvent<K extends keyof HTMLElementEventMap>(
   eventType: K,
   options?: boolean | AddEventListenerOptions,
 ): Source<HTMLElementEventMap[K]>;
+
+function fromEvent(
+  target: EventTarget,
+  eventType: string,
+  options?: boolean | AddEventListenerOptions,
+): Source<Event>;
 
 function fromEvent(
   target: EventTarget,

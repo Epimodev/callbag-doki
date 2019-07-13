@@ -6,7 +6,7 @@ import {
   Callbag,
   Source,
   Sink,
-} from '../types';
+} from '../index';
 
 type Listener<T> = (value: T) => void;
 

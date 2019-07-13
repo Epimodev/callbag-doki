@@ -1,4 +1,4 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../types';
+import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../index';
 import { createOperator, CreateOperatorParam } from './';
 
 function findFunc<I>(func: (value: I) => boolean): CreateOperatorParam<I, I> {

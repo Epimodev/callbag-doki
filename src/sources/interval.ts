@@ -5,7 +5,7 @@ import {
   CallbagType,
   Source,
   Sink,
-} from '../types';
+} from '../index';
 
 function interval(duration: number): Source<number> {
   // @ts-ignore

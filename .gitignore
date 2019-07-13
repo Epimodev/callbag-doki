@@ -21,12 +21,11 @@ node_modules
 # vim
 *.swp
 
-# environment
-/environments/*
-!/environments/example
-
-# parcel cache
-.cache
-
 # build
-dist
+operators
+sources
+utils
+index.*
+
+# accept all files in src
+!src/*
