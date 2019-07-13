@@ -9,6 +9,7 @@ import { find } from './operators/find';
 import { scan } from './operators/scan';
 import { reduce } from './operators/reduce';
 import { take } from './operators/take';
+import { takeLast } from './operators/takeLast';
 import { count } from './operators/count';
 import { min } from './operators/min';
 import { max } from './operators/max';
@@ -38,9 +39,7 @@ pipe(
   fromEvent(window, 'click'),
   count(),
   tap(c => console.log('COUNT', c)),
-  filter(c => c % 2 === 0),
-  tap(v => console.log('FILTERED', v)),
-  find(c => c % 2 === 0),
-  tap(v => console.log('FINDED', v)),
-  // finishAfter(5000),
+  finishAfter(5000),
+  takeLast(4),
+  tap(c => console.log('LAST', c)),
 )(0, () => {});
