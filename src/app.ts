@@ -1,22 +1,9 @@
-import { pipe } from './utils/pipe';
-import { of } from './sources/of';
-import { interval } from './sources/interval';
+import subscribe from 'callbag-subscribe';
+import pipe from 'callbag-pipe';
+
 import { fromEvent } from './sources/fromEvent';
-import { tap } from './operators/tap';
-import { map } from './operators/map';
-import { filter } from './operators/filter';
-import { find } from './operators/find';
-import { scan } from './operators/scan';
-import { reduce } from './operators/reduce';
-import { take } from './operators/take';
-import { takeLast } from './operators/takeLast';
 import { count } from './operators/count';
-import { min } from './operators/min';
-import { max } from './operators/max';
-import { delay } from './operators/delay';
-import { debounce } from './operators/debounce';
-import { throttle } from './operators/throttle';
-import { finishAfter } from './operators/finishAfter';
+import { map } from './operators/map';
 
 // pipe(
 //   interval(1000),
@@ -34,11 +21,18 @@ import { finishAfter } from './operators/finishAfter';
 //   // reduce((acc, v) => acc + v, 0),
 // )(0, () => {});
 
-pipe(
+const source = pipe(
   fromEvent(window, 'click'),
   count(),
-  tap(c => console.log('COUNT', c)),
-  finishAfter(5000),
-  takeLast(4),
-  tap(c => console.log('LAST', c)),
-)(0, () => {});
+  map(v => v),
+);
+
+const dispose = subscribe<number>({
+  next: v => console.log('VALUE', v),
+  error: error => console.log('ERROR', error),
+  complete: () => console.log('COMPLETE'),
+})(source);
+
+setTimeout(() => {
+  dispose();
+}, 5000);

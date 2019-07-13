@@ -10,11 +10,12 @@
   },
   "engineStrict": true,
   "scripts": {
-    "start": "parcel src/index.html",
-    "build": "rm -rf ./dist && parcel build src/index.html",
+    "start": "yarn mv-deps-types && parcel src/index.html",
+    "build": "rm -rf ./dist && yarn mv-deps-types && parcel build src/index.html",
     "lint": "tslint -c tslint.json 'src/**/*.ts?(x)'",
     "check-types": "tsc --noEmit",
-    "check-format": "prettier --list-different 'src/**/*.ts?(x)'"
+    "check-format": "prettier --list-different 'src/**/*.ts?(x)'",
+    "mv-deps-types": "mv ./node_modules/callbag/types.d.ts ./node_modules/callbag/types.ts || exit 0"
   },
   "husky": {
     "hooks": {
@@ -34,5 +35,9 @@
     "tslint-config-airbnb": "^5.11.1",
     "typescript": "^3.5.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "callbag": "^1.2.0",
+    "callbag-pipe": "^1.2.0",
+    "callbag-subscribe": "^1.5.1"
+  }
 }
