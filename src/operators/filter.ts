@@ -23,4 +23,4 @@ function filter<T>(predicate: (value: T) => boolean) {
   return createOperator(filterFunc(predicate));
 }
 
-export { filter };
+export default filter;

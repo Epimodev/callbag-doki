@@ -28,4 +28,4 @@ function interval(duration: number): Source<number> {
   };
 }
 
-export { interval };
+export default interval;

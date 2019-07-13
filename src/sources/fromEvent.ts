@@ -43,4 +43,4 @@ function fromEvent(
   };
 }
 
-export { fromEvent };
+export default fromEvent;

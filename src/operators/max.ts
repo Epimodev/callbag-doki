@@ -26,4 +26,4 @@ function max() {
   return createOperator(maxFunc());
 }
 
-export { max };
+export default max;

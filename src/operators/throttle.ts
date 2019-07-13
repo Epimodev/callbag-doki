@@ -64,4 +64,4 @@ function throttle<I>(duration: number, config?: ThrottleConfig) {
   return createOperator(throttleFunc<I>(duration, config));
 }
 
-export { throttle };
+export default throttle;

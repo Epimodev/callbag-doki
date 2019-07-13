@@ -22,4 +22,4 @@ function tap<I>(func: (value: I) => void) {
   return createOperator(tapFunc(func));
 }
 
-export { tap };
+export default tap;

@@ -43,4 +43,4 @@ function debounce<I>(duration: number) {
   return createOperator(debounceFunc<I>(duration));
 }
 
-export { debounce };
+export default debounce;

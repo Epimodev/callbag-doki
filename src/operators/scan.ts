@@ -26,4 +26,4 @@ function scan<I, O>(reduce: Reduce<I, O>, seed: O) {
   return createOperator(scanFunc(reduce, seed));
 }
 
-export { scan };
+export default scan;

@@ -26,4 +26,4 @@ function find<I>(func: (value: I) => boolean) {
   return createOperator(findFunc(func));
 }
 
-export { find };
+export default find;

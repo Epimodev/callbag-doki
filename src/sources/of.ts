@@ -28,4 +28,4 @@ function of<T>(...values: T[]): Source<T> {
   };
 }
 
-export { of };
+export default of;

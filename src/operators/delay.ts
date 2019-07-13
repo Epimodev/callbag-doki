@@ -45,4 +45,4 @@ function delay<T>(duration: number) {
   return createOperator(delayFunc<T>(duration));
 }
 
-export { delay };
+export default delay;

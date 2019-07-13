@@ -21,4 +21,4 @@ function map<I, O>(mapper: (value: I) => O) {
   return createOperator(mapFunc(mapper));
 }
 
-export { map };
+export default map;

@@ -32,4 +32,4 @@ function takeLast<I>(count?: number) {
   return createOperator(takeLastFunc<I>(count));
 }
 
-export { takeLast };
+export default takeLast;

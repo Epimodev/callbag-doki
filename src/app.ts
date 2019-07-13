@@ -1,9 +1,9 @@
 import subscribe from 'callbag-subscribe';
 import pipe from 'callbag-pipe';
 
-import { fromEvent } from './sources/fromEvent';
-import { count } from './operators/count';
-import { map } from './operators/map';
+import fromEvent from './sources/fromEvent';
+import count from './operators/count';
+import map from './operators/map';
 
 // pipe(
 //   interval(1000),

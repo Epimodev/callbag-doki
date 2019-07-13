@@ -50,4 +50,4 @@ function take<T>(max: number) {
   return createOperator(takeFunc<T>(max));
 }
 
-export { take };
+export default take;

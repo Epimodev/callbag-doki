@@ -26,4 +26,4 @@ function reduce<I, O>(reduce: Reduce<I, O>, seed: O) {
   return createOperator(reduceFunc(reduce, seed));
 }
 
-export { reduce };
+export default reduce;

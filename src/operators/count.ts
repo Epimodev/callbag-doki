@@ -24,4 +24,4 @@ function count<I>() {
   return createOperator(countFunc<I>());
 }
 
-export { count };
+export default count;

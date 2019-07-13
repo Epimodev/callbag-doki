@@ -47,4 +47,4 @@ function finishAfter<T>(duration: number) {
   return createOperator(finishAfterFunc<T>(duration));
 }
 
-export { finishAfter };
+export default finishAfter;

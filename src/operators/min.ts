@@ -26,4 +26,4 @@ function min() {
   return createOperator(minFunc());
 }
 
-export { min };
+export default min;
