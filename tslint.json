@@ -3,6 +3,7 @@
   "rules": {
     "quotemark": [true, "single", "avoid-escape", "jsx-double"],
     "ter-arrow-parens": [true, "as-needed"],
+    "prefer-array-literal": false,
     "function-name": false,
     "variable-name": false,
     "import-name": false,
