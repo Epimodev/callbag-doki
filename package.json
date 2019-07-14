@@ -37,6 +37,7 @@
     }
   },
   "devDependencies": {
+    "@types/query-string": "^5.1.0",
     "gulp": "^4.0.2",
     "gulp-terser": "^1.2.0",
     "husky": "^3.0.0",
@@ -49,6 +50,7 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
-    "callbag": "^1.2.0"
+    "callbag": "^1.2.0",
+    "query-string": "^5.1.1"
   }
 }
