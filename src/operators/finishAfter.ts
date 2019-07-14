@@ -18,8 +18,13 @@ function finishAfterFunc<T>(duration: number): CreateOperatorParam<T, T> {
         const talkback: Callbag<void, T> = (t: CallbagType, p: any) => {
           if (t === CALLBAG_FINISHING) {
             clearTimeout(timeout);
+            if (!finished) {
+              payload(t, p);
+            }
+            finished = true;
+          } else {
+            payload(t, p);
           }
-          payload(t, p);
         };
 
         timeout = setTimeout(() => {

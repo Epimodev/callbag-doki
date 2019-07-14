@@ -11,6 +11,7 @@ function interval(duration: number): Source<number> {
   // @ts-ignore
   return (start: CallbagType, sink: Sink<number>) => {
     if (start === CALLBAG_START) {
+      let interval = 0;
       const talkback = (type: CallbagType) => {
         if (type === CALLBAG_FINISHING) {
           sink(CALLBAG_FINISHING);
@@ -20,7 +21,7 @@ function interval(duration: number): Source<number> {
       sink(CALLBAG_START, talkback);
 
       let nbInterval = 0;
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         nbInterval += 1;
         sink(CALLBAG_RECEIVE, nbInterval);
       }, duration);
