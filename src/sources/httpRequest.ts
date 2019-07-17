@@ -100,7 +100,6 @@ function httpRequest<T = any>(params: RequestParams): Source<RequestResponse<T>>
 
       const talkback = (type: CallbagType) => {
         if (type === CALLBAG_FINISHING && !finished) {
-          sink(CALLBAG_FINISHING);
           xhr.abort();
         }
       };

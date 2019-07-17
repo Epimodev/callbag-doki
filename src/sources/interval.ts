@@ -14,7 +14,6 @@ function interval(duration: number): Source<number> {
       let interval = 0;
       const talkback = (type: CallbagType) => {
         if (type === CALLBAG_FINISHING) {
-          sink(CALLBAG_FINISHING);
           clearInterval(interval);
         }
       };

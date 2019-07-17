@@ -26,7 +26,7 @@
   },
   "engineStrict": true,
   "scripts": {
-    "build": "tsc && gulp && rm -rf ./module",
+    "build": "tsc --project './tsconfig.build.json' && gulp && rm -rf ./module",
     "test": "jest",
     "lint": "tslint -c tslint.json 'src/**/*.ts?(x)'",
     "check-types": "tsc --noEmit",

@@ -27,7 +27,6 @@
     "./src/**/*"
   ],
   "exclude": [
-    "./dist",
     "node_modules"
   ]
 }

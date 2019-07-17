@@ -38,7 +38,6 @@ function fromEvent(
       };
       const talkback = (type: CallbagType) => {
         if (type === CALLBAG_FINISHING) {
-          sink(CALLBAG_FINISHING);
           target.removeEventListener(eventType, handler);
         }
       };

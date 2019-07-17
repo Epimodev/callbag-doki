@@ -74,9 +74,9 @@ function concat<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
   s9: Source<T9>,
   s10: Source<T10>,
 ): Source<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>;
-function concat(...sources: Source<any>[]): Source<any>;
+function concat<T = any>(...sources: Source<T>[]): Source<T>;
 
-function concat(...sources: Source<any>[]): Source<any[]> {
+function concat<T = any>(...sources: Source<T>[]): Source<T> {
   // @ts-ignore
   return (start: CallbagType, sink: Sink<T>) => {
     if (start === CALLBAG_START) {
