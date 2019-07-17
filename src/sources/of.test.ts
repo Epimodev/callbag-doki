@@ -11,7 +11,7 @@ describe('of', () => {
 
     subscribe(source)({ next, complete });
 
-    expect(next.mock.calls.length).toBe(params.length);
-    expect(complete.mock.calls.length).toBe(1);
+    expect(next).toHaveBeenCalledTimes(params.length);
+    expect(complete).toHaveBeenCalledTimes(1);
   });
 });
