@@ -10,6 +10,25 @@ describe('httpRequest', () => {
     global.XMLHttpRequest = nativeXhr;
   });
 
+  test('should send request', () => {
+    const requestDuration = 50;
+
+    const xhrMock = createXhrMock({ duration: requestDuration, responseStatus: 200 });
+    const xhrInstance = new xhrMock();
+    global.XMLHttpRequest = jest.fn(() => xhrInstance) as any;
+
+    expect(xhrInstance.open).toBeCalledTimes(0);
+    expect(xhrInstance.send).toBeCalledTimes(0);
+
+    const source = httpRequest({ url: '' });
+    const unsubscribe = subscribe(source)({});
+
+    expect(xhrInstance.open).toBeCalledTimes(1);
+    expect(xhrInstance.send).toBeCalledTimes(1);
+
+    unsubscribe();
+  });
+
   test('should call next and complete once when request is finished', done => {
     const requestDuration = 50;
     const unsubscribeDuration = 100;
@@ -23,9 +42,6 @@ describe('httpRequest', () => {
 
     const source = httpRequest({ url: '' });
     const unsubscribe = subscribe(source)({ next, complete, error });
-
-    expect(xhrInstance.open).toBeCalledTimes(1);
-    expect(xhrInstance.send).toBeCalledTimes(1);
 
     setTimeout(() => {
       unsubscribe();
@@ -52,9 +68,6 @@ describe('httpRequest', () => {
     const source = httpRequest({ url: '' });
     const unsubscribe = subscribe(source)({ next, complete, error });
 
-    expect(xhrInstance.open).toBeCalledTimes(1);
-    expect(xhrInstance.send).toBeCalledTimes(1);
-
     setTimeout(() => {
       unsubscribe();
 
@@ -80,9 +93,6 @@ describe('httpRequest', () => {
     const source = httpRequest({ url: '' });
     const unsubscribe = subscribe(source)({ next, complete, error });
 
-    expect(xhrInstance.open).toBeCalledTimes(1);
-    expect(xhrInstance.send).toBeCalledTimes(1);
-
     setTimeout(() => {
       unsubscribe();
 
@@ -107,9 +117,6 @@ describe('httpRequest', () => {
 
     const source = httpRequest({ url: '' });
     const unsubscribe = subscribe(source)({ next, complete, error });
-
-    expect(xhrInstance.open).toBeCalledTimes(1);
-    expect(xhrInstance.send).toBeCalledTimes(1);
 
     setTimeout(() => {
       unsubscribe();
