@@ -115,6 +115,9 @@ function httpRequest<T = any>(params: RequestParams): Source<RequestResponse<T>>
         };
 
         if (isRequestOk(xhr)) {
+          if (cache) {
+            cache.pushResponse(params, response);
+          }
           sink(CALLBAG_RECEIVE, response);
           sink(CALLBAG_FINISHING);
         } else {
@@ -142,4 +145,4 @@ function httpRequest<T = any>(params: RequestParams): Source<RequestResponse<T>>
 }
 
 export default httpRequest;
-export { HttpMethod, RequestParams, RequestResponse };
+export { HttpMethod, RequestParams, RequestResponse, HttpCache };
