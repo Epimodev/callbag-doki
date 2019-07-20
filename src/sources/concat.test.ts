@@ -1,17 +1,13 @@
 import subscribe from '../utils/subscribe';
 import concat from './concat';
-import { delayedValue } from '../test/callbags';
+import { timeoutValue } from '../test/callbags';
 
 describe('concat', () => {
-  beforeEach(() => {
-    jest.useRealTimers();
-  });
-
   test('should call source 1 by 1', done => {
     const sources = [
-      delayedValue({ value: 0, duration: 100, failed: false }),
-      delayedValue({ value: 0, duration: 50, failed: false }),
-      delayedValue({ value: 0, duration: 150, failed: false }),
+      timeoutValue({ value: 0, delay: 100, willFail: false }),
+      timeoutValue({ value: 0, delay: 50, willFail: false }),
+      timeoutValue({ value: 0, delay: 150, willFail: false }),
     ];
     const source = concat(...sources);
     const next = jest.fn();
@@ -42,9 +38,9 @@ describe('concat', () => {
 
   test('should receive message from all sources', done => {
     const sources = [
-      delayedValue({ value: 0, duration: 100, failed: false }),
-      delayedValue({ value: 0, duration: 50, failed: false }),
-      delayedValue({ value: 0, duration: 150, failed: false }),
+      timeoutValue({ value: 0, delay: 100, willFail: false }),
+      timeoutValue({ value: 0, delay: 50, willFail: false }),
+      timeoutValue({ value: 0, delay: 150, willFail: false }),
     ];
     const source = concat(...sources);
     const next = jest.fn();
@@ -63,9 +59,9 @@ describe('concat', () => {
 
   test('should complete when all sources are completed', done => {
     const sources = [
-      delayedValue({ value: 0, duration: 100, failed: false }),
-      delayedValue({ value: 0, duration: 50, failed: false }),
-      delayedValue({ value: 0, duration: 150, failed: false }),
+      timeoutValue({ value: 0, delay: 100, willFail: false }),
+      timeoutValue({ value: 0, delay: 50, willFail: false }),
+      timeoutValue({ value: 0, delay: 150, willFail: false }),
     ];
     const source = concat(...sources);
     const complete = jest.fn();
@@ -94,11 +90,16 @@ describe('concat', () => {
     }, 325);
   });
 
-  test('should clear started and non completed source on unsubscribe', done => {
+  test.skip('should not start next sources on unsubscribe', done => {});
+
+  test('should cancel started and non completed source on unsubscribe', done => {
+    const cancelMock1 = jest.fn();
+    const cancelMock2 = jest.fn();
+    const cancelMock3 = jest.fn();
     const sources = [
-      delayedValue({ value: 0, duration: 100, failed: false }),
-      delayedValue({ value: 0, duration: 50, failed: false }),
-      delayedValue({ value: 0, duration: 150, failed: false }),
+      timeoutValue({ value: 0, delay: 100, willFail: false, cancelMock: cancelMock1 }),
+      timeoutValue({ value: 0, delay: 50, willFail: false, cancelMock: cancelMock2 }),
+      timeoutValue({ value: 0, delay: 150, willFail: false, cancelMock: cancelMock3 }),
     ];
     const source = concat(...sources);
 
@@ -106,21 +107,24 @@ describe('concat', () => {
 
     setTimeout(() => {
       // only first source finished
-      jest.useFakeTimers();
 
       unsubscribe();
       // only second sources should be clear because third source isn't started
-      expect(clearTimeout).toBeCalledTimes(1);
+      expect(cancelMock1).toBeCalledTimes(0); // already finished
+      expect(cancelMock2).toBeCalledTimes(1); // not finished
+      expect(cancelMock3).toBeCalledTimes(0); // not started
     }, 125);
 
     setTimeout(() => {
-      expect(clearTimeout).toBeCalledTimes(1);
+      expect(cancelMock3).toBeCalledTimes(0); // not started
 
       done();
     }, 325);
   });
 
   test.skip('should fail when 1 source fail', done => {});
+
+  test.skip('should not start next sources when 1 source fail', done => {});
 
   test.skip('should cancel no completed source when 1 source fail', done => {});
 });

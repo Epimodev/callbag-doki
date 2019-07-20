@@ -7,15 +7,18 @@ import {
   Sink,
 } from '../index';
 
-function delayedValue<T>({
-  value,
-  duration,
-  failed,
-}: {
+interface TimeoutValueParams<T> {
   value: T;
-  duration: number;
-  failed: boolean;
-}): Source<T> {
+  delay: number;
+  willFail: boolean;
+  startMock?: jest.Mock;
+  nextMock?: jest.Mock;
+  completeMock?: jest.Mock;
+  errorMock?: jest.Mock;
+  cancelMock?: jest.Mock;
+}
+
+function timeoutValue<T>(params: TimeoutValueParams<T>): Source<T> {
   // @ts-ignore
   return (start: CallbagType, sink: Sink<T>) => {
     if (start === CALLBAG_START) {
@@ -23,23 +26,58 @@ function delayedValue<T>({
       let timeout = 0;
       const talkback = (type: CallbagType) => {
         if (type === CALLBAG_FINISHING && !finished) {
+          params.cancelMock && params.cancelMock();
           clearTimeout(timeout);
         }
       };
+      params.startMock && params.startMock();
       sink(CALLBAG_START, talkback);
 
       timeout = setTimeout(() => {
         finished = true;
 
-        if (failed) {
+        if (params.willFail) {
+          params.errorMock && params.errorMock();
           sink(CALLBAG_FINISHING, 'Error');
         } else {
-          sink(CALLBAG_RECEIVE, value);
+          params.nextMock && params.nextMock();
+          sink(CALLBAG_RECEIVE, params.value);
+          params.completeMock && params.completeMock();
           sink(CALLBAG_FINISHING);
         }
-      }, duration);
+      }, params.delay);
     }
   };
 }
 
-export { delayedValue };
+interface IntervalValueParams<T> {
+  value: T;
+  duration: number;
+  startMock?: jest.Mock;
+  nextMock?: jest.Mock;
+  cancelMock?: jest.Mock;
+}
+
+function intervalValue<T>(params: IntervalValueParams<T>): Source<T> {
+  // @ts-ignore
+  return (start: CallbagType, sink: Sink<T>) => {
+    if (start === CALLBAG_START) {
+      let interval = 0;
+      const talkback = (type: CallbagType) => {
+        if (type === CALLBAG_FINISHING) {
+          params.cancelMock && params.cancelMock();
+          clearInterval(interval);
+        }
+      };
+      params.startMock && params.startMock();
+      sink(CALLBAG_START, talkback);
+
+      interval = setInterval(() => {
+        params.nextMock && params.nextMock();
+        sink(CALLBAG_RECEIVE, params.value);
+      }, params.duration);
+    }
+  };
+}
+
+export { timeoutValue, intervalValue };
