@@ -90,7 +90,29 @@ describe('concat', () => {
     }, 325);
   });
 
-  test.skip('should not start next sources on unsubscribe', done => {});
+  test('should not start next sources on unsubscribe', done => {
+    const startMock1 = jest.fn();
+    const startMock2 = jest.fn();
+    const startMock3 = jest.fn();
+    const sources = [
+      timeoutValue({ value: 0, delay: 100, willFail: false, startMock: startMock1 }),
+      timeoutValue({ value: 0, delay: 50, willFail: false, startMock: startMock2 }),
+      timeoutValue({ value: 0, delay: 150, willFail: false, startMock: startMock3 }),
+    ];
+    const source = concat(...sources);
+
+    const unsubscribe = subscribe(source)({});
+
+    unsubscribe();
+
+    setTimeout(() => {
+      expect(startMock1).toBeCalledTimes(1);
+      expect(startMock2).toBeCalledTimes(0);
+      expect(startMock3).toBeCalledTimes(0);
+
+      done();
+    }, 325);
+  });
 
   test('should cancel started and non completed source on unsubscribe', done => {
     const cancelMock1 = jest.fn();
@@ -106,25 +128,58 @@ describe('concat', () => {
     const unsubscribe = subscribe(source)({});
 
     setTimeout(() => {
-      // only first source finished
-
+      // unsubscribe after first source finish and before second finish
       unsubscribe();
-      // only second sources should be clear because third source isn't started
-      expect(cancelMock1).toBeCalledTimes(0); // already finished
-      expect(cancelMock2).toBeCalledTimes(1); // not finished
-      expect(cancelMock3).toBeCalledTimes(0); // not started
     }, 125);
 
     setTimeout(() => {
+      // only second sources should be cancel because third source isn't started
+      expect(cancelMock1).toBeCalledTimes(0); // already finished
+      expect(cancelMock2).toBeCalledTimes(1); // not finished
       expect(cancelMock3).toBeCalledTimes(0); // not started
 
       done();
     }, 325);
   });
 
-  test.skip('should fail when 1 source fail', done => {});
+  test('should fail when 1 source fail', done => {
+    const sources = [
+      timeoutValue({ value: 0, delay: 100, willFail: true }),
+      timeoutValue({ value: 0, delay: 50, willFail: false }),
+      timeoutValue({ value: 0, delay: 150, willFail: false }),
+    ];
+    const source = concat(...sources);
+    const error = jest.fn();
 
-  test.skip('should not start next sources when 1 source fail', done => {});
+    subscribe(source)({ error });
 
-  test.skip('should cancel no completed source when 1 source fail', done => {});
+    setTimeout(() => {
+      expect(error).toBeCalledTimes(1);
+
+      done();
+    }, 125);
+  });
+
+  test('should not start next sources when 1 source fail', done => {
+    const startMock1 = jest.fn();
+    const startMock2 = jest.fn();
+    const startMock3 = jest.fn();
+    const sources = [
+      timeoutValue({ value: 0, delay: 100, willFail: true, startMock: startMock1 }),
+      timeoutValue({ value: 0, delay: 50, willFail: false, startMock: startMock2 }),
+      timeoutValue({ value: 0, delay: 150, willFail: false, startMock: startMock3 }),
+    ];
+    const source = concat(...sources);
+
+    subscribe(source)({});
+
+    setTimeout(() => {
+      // second and third source should'nt start because first source fail
+      expect(startMock1).toBeCalledTimes(1);
+      expect(startMock2).toBeCalledTimes(0);
+      expect(startMock3).toBeCalledTimes(0);
+
+      done();
+    }, 325);
+  });
 });
