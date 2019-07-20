@@ -36,7 +36,7 @@ describe('merge', () => {
 
       expect(next).toBeCalledTimes(nbMessagesExpected);
       done();
-    }, 320);
+    }, 350);
   });
 
   test('should clear all subscriptions on unsubscribe', () => {
@@ -97,6 +97,28 @@ describe('merge', () => {
 
       done();
     }, 175);
+  });
+
+  test('cancel non complete sources on unsubscribe', done => {
+    const sources = [
+      delayedValue({ value: 0, duration: 100, failed: false }),
+      delayedValue({ value: 0, duration: 50, failed: false }),
+      delayedValue({ value: 0, duration: 150, failed: false }),
+    ];
+    const source = merge(...sources);
+
+    const unsubscribe = subscribe(source)({});
+
+    setTimeout(() => {
+      jest.useFakeTimers();
+
+      unsubscribe();
+
+      // first and third source should be cancelled
+      expect(clearTimeout).toBeCalledTimes(2);
+
+      done();
+    }, 75);
   });
 
   test('cancel non complete sources when one source fail', done => {
