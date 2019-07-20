@@ -1,6 +1,8 @@
 import subscribe from '../utils/subscribe';
 import merge from './merge';
-import { timeoutValue, intervalValue } from '../test/callbags';
+import { intervalValues } from '../test/callbags';
+
+const sourceValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 describe('merge', () => {
   test('should start all subscriptions', () => {
@@ -8,9 +10,9 @@ describe('merge', () => {
     const startMock2 = jest.fn();
     const startMock3 = jest.fn();
     const sources = [
-      intervalValue({ value: 0, duration: 50, startMock: startMock1 }),
-      intervalValue({ value: 0, duration: 100, startMock: startMock2 }),
-      intervalValue({ value: 0, duration: 150, startMock: startMock3 }),
+      intervalValues({ values: sourceValues, duration: 50, startMock: startMock1 }),
+      intervalValues({ values: sourceValues, duration: 100, startMock: startMock2 }),
+      intervalValues({ values: sourceValues, duration: 150, startMock: startMock3 }),
     ];
     const source = merge(...sources);
 
@@ -29,9 +31,9 @@ describe('merge', () => {
 
   test('should receive messages from all sources', done => {
     const sources = [
-      intervalValue({ value: 0, duration: 50 }),
-      intervalValue({ value: 0, duration: 100 }),
-      intervalValue({ value: 0, duration: 150 }),
+      intervalValues({ values: sourceValues, duration: 50 }),
+      intervalValues({ values: sourceValues, duration: 100 }),
+      intervalValues({ values: sourceValues, duration: 150 }),
     ];
     const source = merge(...sources);
     // 6 for interval(50), 3 for interval(100), 2 for interval(150)
@@ -53,9 +55,9 @@ describe('merge', () => {
     const cancelMock2 = jest.fn();
     const cancelMock3 = jest.fn();
     const sources = [
-      intervalValue({ value: 0, duration: 50, cancelMock: cancelMock1 }),
-      intervalValue({ value: 0, duration: 100, cancelMock: cancelMock2 }),
-      intervalValue({ value: 0, duration: 150, cancelMock: cancelMock3 }),
+      intervalValues({ values: sourceValues, duration: 50, cancelMock: cancelMock1 }),
+      intervalValues({ values: sourceValues, duration: 100, cancelMock: cancelMock2 }),
+      intervalValues({ values: sourceValues, duration: 150, cancelMock: cancelMock3 }),
     ];
     const source = merge(...sources);
 
@@ -70,9 +72,9 @@ describe('merge', () => {
 
   test('become complete when all source are complete', done => {
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: false }),
-      timeoutValue({ value: 0, delay: 50, willFail: false }),
-      timeoutValue({ value: 0, delay: 150, willFail: false }),
+      intervalValues({ values: [0], duration: 100, willFail: false }),
+      intervalValues({ values: [0], duration: 50, willFail: false }),
+      intervalValues({ values: [0], duration: 150, willFail: false }),
     ];
     const source = merge(...sources);
     const complete = jest.fn();
@@ -96,9 +98,9 @@ describe('merge', () => {
 
   test('send error if one of source fail', done => {
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: true }),
-      timeoutValue({ value: 0, delay: 50, willFail: false }),
-      timeoutValue({ value: 0, delay: 150, willFail: false }),
+      intervalValues({ values: [0], duration: 100, willFail: true }),
+      intervalValues({ values: [0], duration: 50, willFail: false }),
+      intervalValues({ values: [0], duration: 150, willFail: false }),
     ];
     const source = merge(...sources);
     const error = jest.fn();
@@ -119,9 +121,9 @@ describe('merge', () => {
     const cancelMock2 = jest.fn();
     const cancelMock3 = jest.fn();
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: false, cancelMock: cancelMock1 }),
-      timeoutValue({ value: 0, delay: 50, willFail: false, cancelMock: cancelMock2 }),
-      timeoutValue({ value: 0, delay: 150, willFail: false, cancelMock: cancelMock3 }),
+      intervalValues({ values: [0], duration: 100, willFail: false, cancelMock: cancelMock1 }),
+      intervalValues({ values: [0], duration: 50, willFail: false, cancelMock: cancelMock2 }),
+      intervalValues({ values: [0], duration: 150, willFail: false, cancelMock: cancelMock3 }),
     ];
     const source = merge(...sources);
 
@@ -144,9 +146,9 @@ describe('merge', () => {
     const cancelMock2 = jest.fn();
     const cancelMock3 = jest.fn();
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: false, cancelMock: cancelMock1 }),
-      timeoutValue({ value: 0, delay: 50, willFail: true, cancelMock: cancelMock2 }),
-      timeoutValue({ value: 0, delay: 150, willFail: false, cancelMock: cancelMock3 }),
+      intervalValues({ values: [0], duration: 100, willFail: false, cancelMock: cancelMock1 }),
+      intervalValues({ values: [0], duration: 50, willFail: true, cancelMock: cancelMock2 }),
+      intervalValues({ values: [0], duration: 150, willFail: false, cancelMock: cancelMock3 }),
     ];
     const source = merge(...sources);
 

@@ -1,13 +1,13 @@
 import subscribe from '../utils/subscribe';
 import concat from './concat';
-import { timeoutValue } from '../test/callbags';
+import { intervalValues } from '../test/callbags';
 
 describe('concat', () => {
   test('should call source 1 by 1', done => {
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: false }),
-      timeoutValue({ value: 0, delay: 50, willFail: false }),
-      timeoutValue({ value: 0, delay: 150, willFail: false }),
+      intervalValues({ values: [0], duration: 100, willFail: false }),
+      intervalValues({ values: [0], duration: 50, willFail: false }),
+      intervalValues({ values: [0], duration: 150, willFail: false }),
     ];
     const source = concat(...sources);
     const next = jest.fn();
@@ -38,9 +38,9 @@ describe('concat', () => {
 
   test('should receive message from all sources', done => {
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: false }),
-      timeoutValue({ value: 0, delay: 50, willFail: false }),
-      timeoutValue({ value: 0, delay: 150, willFail: false }),
+      intervalValues({ values: [0], duration: 100, willFail: false }),
+      intervalValues({ values: [0], duration: 50, willFail: false }),
+      intervalValues({ values: [0], duration: 150, willFail: false }),
     ];
     const source = concat(...sources);
     const next = jest.fn();
@@ -59,9 +59,9 @@ describe('concat', () => {
 
   test('should complete when all sources are completed', done => {
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: false }),
-      timeoutValue({ value: 0, delay: 50, willFail: false }),
-      timeoutValue({ value: 0, delay: 150, willFail: false }),
+      intervalValues({ values: [0], duration: 100, willFail: false }),
+      intervalValues({ values: [0], duration: 50, willFail: false }),
+      intervalValues({ values: [0], duration: 150, willFail: false }),
     ];
     const source = concat(...sources);
     const complete = jest.fn();
@@ -95,9 +95,9 @@ describe('concat', () => {
     const startMock2 = jest.fn();
     const startMock3 = jest.fn();
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: false, startMock: startMock1 }),
-      timeoutValue({ value: 0, delay: 50, willFail: false, startMock: startMock2 }),
-      timeoutValue({ value: 0, delay: 150, willFail: false, startMock: startMock3 }),
+      intervalValues({ values: [0], duration: 100, willFail: false, startMock: startMock1 }),
+      intervalValues({ values: [0], duration: 50, willFail: false, startMock: startMock2 }),
+      intervalValues({ values: [0], duration: 150, willFail: false, startMock: startMock3 }),
     ];
     const source = concat(...sources);
 
@@ -119,9 +119,9 @@ describe('concat', () => {
     const cancelMock2 = jest.fn();
     const cancelMock3 = jest.fn();
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: false, cancelMock: cancelMock1 }),
-      timeoutValue({ value: 0, delay: 50, willFail: false, cancelMock: cancelMock2 }),
-      timeoutValue({ value: 0, delay: 150, willFail: false, cancelMock: cancelMock3 }),
+      intervalValues({ values: [0], duration: 100, willFail: false, cancelMock: cancelMock1 }),
+      intervalValues({ values: [0], duration: 50, willFail: false, cancelMock: cancelMock2 }),
+      intervalValues({ values: [0], duration: 150, willFail: false, cancelMock: cancelMock3 }),
     ];
     const source = concat(...sources);
 
@@ -144,9 +144,9 @@ describe('concat', () => {
 
   test('should fail when 1 source fail', done => {
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: true }),
-      timeoutValue({ value: 0, delay: 50, willFail: false }),
-      timeoutValue({ value: 0, delay: 150, willFail: false }),
+      intervalValues({ values: [0], duration: 100, willFail: true }),
+      intervalValues({ values: [0], duration: 50, willFail: false }),
+      intervalValues({ values: [0], duration: 150, willFail: false }),
     ];
     const source = concat(...sources);
     const error = jest.fn();
@@ -165,9 +165,9 @@ describe('concat', () => {
     const startMock2 = jest.fn();
     const startMock3 = jest.fn();
     const sources = [
-      timeoutValue({ value: 0, delay: 100, willFail: true, startMock: startMock1 }),
-      timeoutValue({ value: 0, delay: 50, willFail: false, startMock: startMock2 }),
-      timeoutValue({ value: 0, delay: 150, willFail: false, startMock: startMock3 }),
+      intervalValues({ values: [0], duration: 100, willFail: true, startMock: startMock1 }),
+      intervalValues({ values: [0], duration: 50, willFail: false, startMock: startMock2 }),
+      intervalValues({ values: [0], duration: 150, willFail: false, startMock: startMock3 }),
     ];
     const source = concat(...sources);
 
