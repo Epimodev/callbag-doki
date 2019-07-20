@@ -5,7 +5,7 @@ import createXhrMock from '../test/xhr';
 const global: any = window;
 const nativeXhr = global.XMLHttpRequest;
 
-describe('httpRequest', () => {
+describe('sources/httpRequest', () => {
   afterEach(() => {
     global.XMLHttpRequest = nativeXhr;
   });

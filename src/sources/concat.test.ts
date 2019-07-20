@@ -2,7 +2,7 @@ import subscribe from '../utils/subscribe';
 import concat from './concat';
 import { intervalValues } from '../test/callbags';
 
-describe('concat', () => {
+describe('sources/concat', () => {
   test('should call source 1 by 1', done => {
     const sources = [
       intervalValues({ values: [0], duration: 100, willFail: false }),

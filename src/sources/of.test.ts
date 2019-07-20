@@ -1,7 +1,7 @@
 import subscribe from '../utils/subscribe';
 import of from './of';
 
-describe('of', () => {
+describe('sources/of', () => {
   test('should send an event for each param and 1 complete', () => {
     const params = [10, 5, 12, 16, 28];
     const source = of(...params);

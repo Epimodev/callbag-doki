@@ -1,7 +1,7 @@
 import subscribe from '../utils/subscribe';
 import interval from './interval';
 
-describe('interval', () => {
+describe('sources/interval', () => {
   beforeEach(() => {
     jest.useRealTimers();
   });

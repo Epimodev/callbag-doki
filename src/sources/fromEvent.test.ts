@@ -1,7 +1,7 @@
 import subscribe from '../utils/subscribe';
 import fromEvent from './fromEvent';
 
-describe('fromEvent', () => {
+describe('sources/fromEvent', () => {
   test('should add event listener', () => {
     const fakeHtmlElement = {
       addEventListener: jest.fn(),
