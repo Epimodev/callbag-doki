@@ -33,6 +33,7 @@ function debounceFunc<I>(duration: number): CreateOperatorParam<I, I> {
         }, duration);
         break;
       case CALLBAG_FINISHING:
+        clearTimeout(timeout);
         output(type, payload);
         break;
     }

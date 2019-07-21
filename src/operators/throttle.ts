@@ -54,6 +54,7 @@ function throttleFunc<I>(
         }
         break;
       case CALLBAG_FINISHING:
+        clearTimeout(timeout);
         output(type, payload);
         break;
     }
