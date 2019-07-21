@@ -38,7 +38,7 @@ function minify() {
   return (
     src('module/**/*.js')
       .pipe(cleanJsFile)
-      .pipe(terser())
+      .pipe(terser({ module: true }))
       .pipe(dest('./module'))
   );
 }
