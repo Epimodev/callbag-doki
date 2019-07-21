@@ -35,7 +35,20 @@ function delayFunc<T>(duration: number): CreateOperatorParam<T, T> {
         timeouts.push(timeout);
         break;
       case CALLBAG_FINISHING:
-        output(type, payload);
+        if (payload) {
+          // if there is an error, we clear all timeout
+          for (let i = 0, l = timeouts.length; i < l; i += 1) {
+            clearTimeout(timeouts[i]);
+          }
+          output(CALLBAG_FINISHING, payload);
+        } else {
+          const timeout = setTimeout(() => {
+            output(CALLBAG_FINISHING);
+            const index = timeouts.indexOf(timeout);
+            timeouts.splice(index, 1);
+          }, duration);
+          timeouts.push(timeout);
+        }
         break;
     }
   };
