@@ -2,7 +2,7 @@ import subscribe from '../utils/subscribe';
 import takeLast from './takeLast';
 import { intervalValues } from '../test/callbags';
 
-describe('operators/tap', () => {
+describe('operators/takeLast', () => {
   test('should complete at the end of the source', done => {
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50 });

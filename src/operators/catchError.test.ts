@@ -3,7 +3,7 @@ import catchError from './catchError';
 import of from '../sources/of';
 import { intervalValues } from '../test/callbags';
 
-describe('operators/tap', () => {
+describe('operators/catchError', () => {
   test('should receive a message for each value from source', done => {
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50 });

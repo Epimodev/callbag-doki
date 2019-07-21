@@ -2,7 +2,7 @@ import subscribe from '../utils/subscribe';
 import reduce from './reduce';
 import { intervalValues } from '../test/callbags';
 
-describe('operators/scan', () => {
+describe('operators/reduce', () => {
   test('should receive only 1 value', done => {
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50 });
