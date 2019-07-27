@@ -16,6 +16,7 @@ interface FlattenSubscription {
 
 function flatMapFunc<I, O>(mapper: (value: I) => Source<O>): CreateOperatorParam<I, O> {
   let finished = false;
+  let sourceTalkback: Callbag<void, I>;
   const subscriptionList: FlattenSubscription[] = [];
 
   const cancelSubscriptions = () => {
@@ -37,11 +38,12 @@ function flatMapFunc<I, O>(mapper: (value: I) => Source<O>): CreateOperatorParam
   return (output: Sink<O>): Sink<I> => (type: CallbagType, payload: any) => {
     switch (type) {
       case CALLBAG_START:
+        sourceTalkback = payload;
         const talkback: Callbag<void, I | O> = (t: CallbagType, p: any) => {
           if (t === CALLBAG_FINISHING) {
             cancelSubscriptions();
           }
-          payload(t, p);
+          sourceTalkback(t as any, p);
         };
 
         output(type, talkback);
@@ -58,6 +60,7 @@ function flatMapFunc<I, O>(mapper: (value: I) => Source<O>): CreateOperatorParam
             removeSubscription(subscription);
             cancelSubscriptions();
             output(CALLBAG_FINISHING, error);
+            sourceTalkback(CALLBAG_FINISHING, error);
           };
           const complete = () => {
             removeSubscription(subscription);

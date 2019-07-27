@@ -61,7 +61,7 @@ describe('operators/catchError', () => {
     }, 100);
   });
 
-  test("each output should be equals with input when source does'nt fail", done => {
+  test("each output should be equals with input when source doesn't fail", done => {
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50 });
     const transformedSource = catchError<number, string>(() => of('Error'))(source);

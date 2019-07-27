@@ -1,13 +1,28 @@
 import subscribe from '../utils/subscribe';
-import flatMap from './flatMap';
+import switchMap from './switchMap';
 import of from '../sources/of';
 import { intervalValues } from '../test/callbags';
 
-describe('operators/flatMap', () => {
+describe('operators/switchMap', () => {
+  test('should receive a message for each value from source', done => {
+    const values = [5, 8, 3, 6, 2];
+    const source = intervalValues({ values, duration: 50 });
+    const transformedSource = switchMap<number, number>(() => of(1))(source);
+    const next = jest.fn();
+
+    subscribe(transformedSource)({ next });
+
+    setTimeout(() => {
+      expect(next).toBeCalledTimes(values.length);
+
+      done();
+    }, 300);
+  });
+
   test('should complete at the end of the source', done => {
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50 });
-    const transformedSource = flatMap<number, number>(() => of(1))(source);
+    const transformedSource = switchMap<number, number>(() => of(1))(source);
     const complete = jest.fn();
 
     subscribe(transformedSource)({ complete });
@@ -22,7 +37,7 @@ describe('operators/flatMap', () => {
   test('should failed if source fail', done => {
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50, willFail: true });
-    const transformedSource = flatMap<number, number>(() => of(1))(source);
+    const transformedSource = switchMap<number, number>(() => of(1))(source);
     const error = jest.fn();
 
     subscribe(transformedSource)({ error });
@@ -38,7 +53,7 @@ describe('operators/flatMap', () => {
     const cancelMock = jest.fn();
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50, cancelMock });
-    const transformedSource = flatMap<number, number>(() => of(1))(source);
+    const transformedSource = switchMap<number, number>(() => of(1))(source);
 
     const unsubscribe = subscribe(transformedSource)({});
     unsubscribe();
@@ -50,7 +65,7 @@ describe('operators/flatMap', () => {
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50 });
     const mapFunc = jest.fn(() => of(1));
-    const transformedSource = flatMap<number, number>(mapFunc)(source);
+    const transformedSource = switchMap<number, number>(mapFunc)(source);
 
     subscribe(transformedSource)({});
 
@@ -61,26 +76,11 @@ describe('operators/flatMap', () => {
     }, 300);
   });
 
-  test('should complete at the end of the source', done => {
-    const values = [5, 8, 3, 6, 2];
-    const source = intervalValues({ values, duration: 50 });
-    const transformedSource = flatMap<number, number>(() => of(1))(source);
-    const complete = jest.fn();
-
-    subscribe(transformedSource)({ complete });
-
-    setTimeout(() => {
-      expect(complete).toBeCalledTimes(1);
-
-      done();
-    }, 300);
-  });
-
-  test('should complete when source from map function are completed', done => {
+  test('should complete when source from map complete', done => {
     const initialSourceComplete = jest.fn();
     const values = [5, 8, 3];
     const source = intervalValues({ values, duration: 50, completeMock: initialSourceComplete });
-    const transformedSource = flatMap<number, number>(() =>
+    const transformedSource = switchMap<number, number>(() =>
       intervalValues({ values, duration: 50 }),
     )(source);
     const complete = jest.fn();
@@ -106,7 +106,7 @@ describe('operators/flatMap', () => {
     const mapSourceCancel = jest.fn();
     const values = [5, 8, 3];
     const source = intervalValues({ values, duration: 50, cancelMock: initialSourceCancel });
-    const transformedSource = flatMap<number, number>(() =>
+    const transformedSource = switchMap<number, number>(() =>
       intervalValues({ values, duration: 50, cancelMock: mapSourceCancel }),
     )(source);
 
@@ -127,7 +127,7 @@ describe('operators/flatMap', () => {
     const mapSourceCancel = jest.fn();
     const values = [5, 8, 3];
     const source = intervalValues({ values, duration: 50, willFail: true, failedindex: 1 });
-    const transformedSource = flatMap<number, number>(() =>
+    const transformedSource = switchMap<number, number>(() =>
       intervalValues({
         values,
         duration: 50,
@@ -148,34 +148,10 @@ describe('operators/flatMap', () => {
     }, 400);
   });
 
-  test('should cancel other sources from map function when one source from map fail', done => {
-    const mapSourceCancel = jest.fn();
-    const values = [5, 8, 3];
-    const source = intervalValues({ values, duration: 50 });
-    const transformedSource = flatMap<number, number>(v =>
-      intervalValues({
-        values,
-        duration: 50,
-        willFail: v === 8, // only second mapped source will fail
-        cancelMock: mapSourceCancel,
-      }),
-    )(source);
-    const error = jest.fn();
-
-    subscribe(transformedSource)({ error });
-
-    setTimeout(() => {
-      expect(error).toBeCalledTimes(1);
-      expect(mapSourceCancel).toBeCalled();
-
-      done();
-    }, 400);
-  });
-
   test('should fail when source from map fail', done => {
     const values = [5, 8, 3];
     const source = intervalValues({ values, duration: 50 });
-    const transformedSource = flatMap<number, number>(() =>
+    const transformedSource = switchMap<number, number>(() =>
       intervalValues({ values, duration: 50, willFail: true }),
     )(source);
     const error = jest.fn();
@@ -193,7 +169,7 @@ describe('operators/flatMap', () => {
     const cancelMock = jest.fn();
     const values = [5, 8, 3];
     const source = intervalValues({ values, duration: 50, cancelMock });
-    const transformedSource = flatMap<number, number>(() =>
+    const transformedSource = switchMap<number, number>(() =>
       intervalValues({ values, duration: 50, willFail: true }),
     )(source);
 
@@ -204,5 +180,29 @@ describe('operators/flatMap', () => {
 
       done();
     }, 125);
+  });
+
+  test('should cancel previous mapped source for each received value', done => {
+    const mapSourceStart = jest.fn();
+    const mapSourceCancel = jest.fn();
+    const values = [5, 8, 3];
+    const source = intervalValues({ values, duration: 50 });
+    const transformedSource = switchMap<number, number>(() =>
+      intervalValues({
+        values,
+        duration: 50,
+        startMock: mapSourceStart,
+        cancelMock: mapSourceCancel,
+      }),
+    )(source);
+
+    subscribe(transformedSource)({});
+
+    setTimeout(() => {
+      expect(mapSourceStart).toBeCalledTimes(3);
+      expect(mapSourceCancel).toBeCalledTimes(2);
+
+      done();
+    }, 400);
   });
 });
