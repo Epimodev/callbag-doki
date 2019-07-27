@@ -11,6 +11,7 @@ interface IntervalValuesParams<T> {
   values: T[];
   duration: number;
   willFail?: boolean;
+  failedindex?: number;
   startMock?: jest.Mock;
   nextMock?: jest.Mock;
   completeMock?: jest.Mock;
@@ -25,6 +26,7 @@ function intervalValues<T>(params: IntervalValuesParams<T>): Source<T> {
       let interval = 0;
       let finished = false;
       let index = 0;
+      const failedindex = params.failedindex || 0;
       const talkback = (type: CallbagType) => {
         if (type === CALLBAG_FINISHING && !finished) {
           params.cancelMock && params.cancelMock();
@@ -35,7 +37,7 @@ function intervalValues<T>(params: IntervalValuesParams<T>): Source<T> {
       sink(CALLBAG_START, talkback);
 
       interval = setInterval(() => {
-        if (params.willFail) {
+        if (params.willFail && failedindex === index) {
           clearInterval(interval);
           finished = true;
           params.errorMock && params.errorMock();
