@@ -1,8 +1,8 @@
 import { Source } from '../index';
 import { createSource } from './';
 
-function intervalFunc(duration: number) {
-  return (next: (value: number) => void) => {
+function interval(duration: number): Source<number> {
+  return createSource(next => {
     let nbInterval = 0;
 
     const interval = setInterval(() => {
@@ -13,11 +13,7 @@ function intervalFunc(duration: number) {
     return () => {
       clearInterval(interval);
     };
-  };
-}
-
-function interval(duration: number): Source<number> {
-  return createSource(intervalFunc(duration));
+  });
 }
 
 export default interval;

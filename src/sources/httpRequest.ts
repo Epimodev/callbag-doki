@@ -71,12 +71,8 @@ function getResponseHeaders(xhr: XMLHttpRequest): { [key: string]: string } {
   return headerMap;
 }
 
-function httpRequestFunc<T = any>(params: RequestParams) {
-  return (
-    next: (response: RequestResponse<T>) => void,
-    complete: () => void,
-    error: (err: any) => void,
-  ) => {
+function httpRequest<T = any>(params: RequestParams): Source<RequestResponse<T>> {
+  return createSource((next, complete, error) => {
     const { url, method = 'GET', headers, query, body, responseType = 'json', cache } = params;
 
     const cachedResponse = cache && cache.getResponse(params);
@@ -131,11 +127,7 @@ function httpRequestFunc<T = any>(params: RequestParams) {
         xhr.abort();
       }
     };
-  };
-}
-
-function httpRequest<T = any>(params: RequestParams): Source<RequestResponse<T>> {
-  return createSource(httpRequestFunc<T>(params));
+  });
 }
 
 export default httpRequest;

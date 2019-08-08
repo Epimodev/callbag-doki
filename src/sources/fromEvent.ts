@@ -1,24 +1,6 @@
 import { Source } from '../index';
 import { createSource } from './';
 
-function fromEventFunc(
-  target: EventTarget,
-  eventType: string,
-  options?: boolean | AddEventListenerOptions,
-) {
-  return (next: (event: Event) => void) => {
-    const handler = (event: Event) => {
-      next(event);
-    };
-
-    target.addEventListener(eventType, handler, options);
-
-    return () => {
-      target.removeEventListener(eventType, handler);
-    };
-  };
-}
-
 function fromEvent<K extends keyof WindowEventMap>(
   target: Window,
   eventType: K,
@@ -42,7 +24,17 @@ function fromEvent(
   eventType: string,
   options?: boolean | AddEventListenerOptions,
 ): Source<Event> {
-  return createSource(fromEventFunc(target, eventType, options));
+  return createSource(next => {
+    const handler = (event: Event) => {
+      next(event);
+    };
+
+    target.addEventListener(eventType, handler, options);
+
+    return () => {
+      target.removeEventListener(eventType, handler);
+    };
+  });
 }
 
 export default fromEvent;

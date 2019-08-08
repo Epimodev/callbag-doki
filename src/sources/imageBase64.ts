@@ -1,8 +1,8 @@
 import { Source } from '../index';
 import { createSource } from './';
 
-function imageBase64Func(image: Blob) {
-  return (next: (result: string) => void, complete: () => void, error: (err: any) => void) => {
+function imageBase64(image: Blob): Source<string> {
+  return createSource((next, complete, error) => {
     const fileReader = new FileReader();
     const handleLoadend = () => {
       next(fileReader.result as string);
@@ -22,11 +22,7 @@ function imageBase64Func(image: Blob) {
       fileReader.removeEventListener('loadend', handleLoadend);
       fileReader.removeEventListener('error', handleError);
     };
-  };
-}
-
-function imageBase64(image: Blob): Source<string> {
-  return createSource(imageBase64Func(image));
+  });
 }
 
 export default imageBase64;
