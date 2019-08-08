@@ -1,11 +1,23 @@
-import {
-  CALLBAG_START,
-  CALLBAG_RECEIVE,
-  CALLBAG_FINISHING,
-  CallbagType,
-  Source,
-  Sink,
-} from '../index';
+import { Source } from '../index';
+import { createSource } from './';
+
+function fromEventFunc(
+  target: EventTarget,
+  eventType: string,
+  options?: boolean | AddEventListenerOptions,
+) {
+  return (next: (event: Event) => void) => {
+    const handler = (event: Event) => {
+      next(event);
+    };
+
+    target.addEventListener(eventType, handler, options);
+
+    return () => {
+      target.removeEventListener(eventType, handler);
+    };
+  };
+}
 
 function fromEvent<K extends keyof WindowEventMap>(
   target: Window,
@@ -30,22 +42,7 @@ function fromEvent(
   eventType: string,
   options?: boolean | AddEventListenerOptions,
 ): Source<Event> {
-  // @ts-ignore
-  return (start: CallbagType, sink: Sink<Event>) => {
-    if (start === CALLBAG_START) {
-      const handler = (event: Event) => {
-        sink(CALLBAG_RECEIVE, event);
-      };
-      const talkback = (type: CallbagType) => {
-        if (type === CALLBAG_FINISHING) {
-          target.removeEventListener(eventType, handler);
-        }
-      };
-      sink(CALLBAG_START, talkback);
-
-      target.addEventListener(eventType, handler, options);
-    }
-  };
+  return createSource(fromEventFunc(target, eventType, options));
 }
 
 export default fromEvent;

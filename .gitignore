@@ -28,4 +28,4 @@ utils
 index.*
 
 # accept all files in src
-!src/*
+!src/**/*
