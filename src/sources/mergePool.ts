@@ -29,10 +29,10 @@ function mergePool<T = any>(sources: Source<T>[], size: number): Source<T> {
       };
 
       const startSource = (index: number) => {
+        nbStarted += 1;
         sources[index](CALLBAG_START, (type: CallbagType, payload: any) => {
           switch (type) {
             case CALLBAG_START:
-              nbStarted += 1;
               sourceTalkbacks[index] = payload;
               if (!started) {
                 started = true;
@@ -74,8 +74,8 @@ function mergePool<T = any>(sources: Source<T>[], size: number): Source<T> {
       };
 
       const nbToStart = Math.min(nbSources, size);
-      for (let i = 0; i < nbToStart; i += 1) {
-        startSource(i);
+      while (nbStarted < nbToStart) {
+        startSource(nbStarted);
       }
     }
   };

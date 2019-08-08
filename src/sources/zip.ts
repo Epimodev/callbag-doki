@@ -96,10 +96,10 @@ function zip<T = any>(sources: Source<T>[], poolSize = Infinity): Source<T[]> {
       };
 
       const startSource = (index: number) => {
+        nbStarted += 1;
         sources[index](CALLBAG_START, (type: CallbagType, payload: any) => {
           switch (type) {
             case CALLBAG_START:
-              nbStarted += 1;
               sourceTalkbacks[index] = payload;
               if (!started) {
                 started = true;
@@ -146,8 +146,8 @@ function zip<T = any>(sources: Source<T>[], poolSize = Infinity): Source<T[]> {
       };
 
       const nbToStart = Math.min(nbSources, poolSize);
-      for (let i = 0; i < nbToStart; i += 1) {
-        startSource(i);
+      while (nbStarted < nbToStart) {
+        startSource(nbStarted);
       }
     }
   };
