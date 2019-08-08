@@ -1,31 +1,23 @@
-import {
-  CALLBAG_START,
-  CALLBAG_RECEIVE,
-  CALLBAG_FINISHING,
-  CallbagType,
-  Source,
-  Sink,
-} from '../index';
+import { Source } from '../index';
+import { createSource } from './';
+
+function intervalFunc(duration: number) {
+  return (next: (value: number) => void) => {
+    let nbInterval = 0;
+
+    const interval = setInterval(() => {
+      nbInterval += 1;
+      next(nbInterval);
+    }, duration);
+
+    return () => {
+      clearInterval(interval);
+    };
+  };
+}
 
 function interval(duration: number): Source<number> {
-  // @ts-ignore
-  return (start: CallbagType, sink: Sink<number>) => {
-    if (start === CALLBAG_START) {
-      let interval = 0;
-      const talkback = (type: CallbagType) => {
-        if (type === CALLBAG_FINISHING) {
-          clearInterval(interval);
-        }
-      };
-      sink(CALLBAG_START, talkback);
-
-      let nbInterval = 0;
-      interval = setInterval(() => {
-        nbInterval += 1;
-        sink(CALLBAG_RECEIVE, nbInterval);
-      }, duration);
-    }
-  };
+  return createSource(intervalFunc(duration));
 }
 
 export default interval;

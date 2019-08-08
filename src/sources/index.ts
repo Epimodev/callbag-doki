@@ -9,8 +9,8 @@ import {
 
 export type CreateSourceParam<V> = (
   next: (value: V) => void,
-  complete?: () => void,
-  error?: (err: any) => void,
+  complete: () => void,
+  error: (err: any) => void,
 ) => (() => void) | undefined;
 
 export function createSource<O>(fn: CreateSourceParam<O>): Source<O> {

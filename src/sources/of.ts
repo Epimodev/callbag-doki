@@ -1,31 +1,25 @@
-import {
-  CALLBAG_START,
-  CALLBAG_RECEIVE,
-  CALLBAG_FINISHING,
-  CallbagType,
-  Source,
-  Sink,
-} from '../index';
+import { Source } from '../index';
+import { createSource } from './';
+
+function ofFunc<T>(...values: T[]) {
+  return (next: (value: T) => void, complete: () => void) => {
+    let finished = false;
+
+    for (let i = 0, l = values.length; i < l && !finished; i += 1) {
+      next(values[i]);
+    }
+    if (!finished) {
+      complete();
+    }
+
+    return () => {
+      finished = true;
+    };
+  };
+}
 
 function of<T>(...values: T[]): Source<T> {
-  // @ts-ignore
-  return (start: CallbagType, sink: Sink<T>) => {
-    if (start === CALLBAG_START) {
-      let finished = false;
-      const talkback = (type: CallbagType) => {
-        if (type === CALLBAG_FINISHING) {
-          finished = true;
-        }
-      };
-      sink(CALLBAG_START, talkback);
-
-      for (let i = 0, l = values.length; i < l && !finished; i += 1) {
-        sink(CALLBAG_RECEIVE, values[i]);
-      }
-
-      sink(CALLBAG_FINISHING);
-    }
-  };
+  return createSource(ofFunc(...values));
 }
 
 export default of;

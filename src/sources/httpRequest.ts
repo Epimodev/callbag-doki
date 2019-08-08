@@ -1,12 +1,6 @@
 import { stringify } from 'query-string';
-import {
-  CALLBAG_START,
-  CALLBAG_RECEIVE,
-  CALLBAG_FINISHING,
-  CallbagType,
-  Source,
-  Sink,
-} from '../index';
+import { Source } from '../index';
+import { createSource } from './';
 
 interface HttpCache {
   getResponse: (params: Omit<RequestParams, 'cache'>) => RequestResponse<any> | undefined;
@@ -77,71 +71,71 @@ function getResponseHeaders(xhr: XMLHttpRequest): { [key: string]: string } {
   return headerMap;
 }
 
-function httpRequest<T = any>(params: RequestParams): Source<RequestResponse<T>> {
-  const { url, method = 'GET', headers, query, body, responseType = 'json', cache } = params;
-  // @ts-ignore
-  return (start: CallbagType, sink: Sink<RequestResponse<T>>) => {
-    if (start === CALLBAG_START) {
-      if (cache) {
-        const cachedResponse = cache.getResponse(params);
+function httpRequestFunc<T = any>(params: RequestParams) {
+  return (
+    next: (response: RequestResponse<T>) => void,
+    complete: () => void,
+    error: (err: any) => void,
+  ) => {
+    const { url, method = 'GET', headers, query, body, responseType = 'json', cache } = params;
 
-        if (cachedResponse) {
-          sink(CALLBAG_START, () => {});
-          sink(CALLBAG_RECEIVE, cachedResponse);
-          sink(CALLBAG_FINISHING);
-          // if we find request in cache, we don't send http request
-          return;
-        }
-      }
-
-      // only when there isn't cache or response doesn't exist in cache
-      const xhr = new XMLHttpRequest();
-      let finished = false;
-
-      const talkback = (type: CallbagType) => {
-        if (type === CALLBAG_FINISHING && !finished) {
-          xhr.abort();
-        }
-      };
-      sink(CALLBAG_START, talkback);
-
-      xhr.responseType = responseType;
-
-      xhr.onload = () => {
-        const response = {
-          status: xhr.status,
-          headers: getResponseHeaders(xhr),
-          data: xhr.response,
-        };
-
-        if (isRequestOk(xhr)) {
-          if (cache) {
-            cache.pushResponse(params, response);
-          }
-          sink(CALLBAG_RECEIVE, response);
-          sink(CALLBAG_FINISHING);
-        } else {
-          sink(CALLBAG_FINISHING, response);
-        }
-        finished = true;
-      };
-
-      xhr.onerror = () => {
-        const response = {
-          status: xhr.status,
-          headers: getResponseHeaders(xhr),
-          data: xhr.statusText,
-        };
-        sink(CALLBAG_FINISHING, response);
-        finished = true;
-      };
-
-      const urlToCall = query ? `${url}?${stringify(query)}` : url;
-      xhr.open(method, urlToCall);
-      if (headers) setHeaders(xhr, headers);
-      xhr.send(formatBody(body));
+    const cachedResponse = cache && cache.getResponse(params);
+    if (cachedResponse) {
+      next(cachedResponse);
+      complete();
+      return;
     }
+
+    // if reponse doesn't come from cache
+    const xhr = new XMLHttpRequest();
+    let finished = false;
+
+    xhr.responseType = responseType;
+
+    xhr.onload = () => {
+      const response = {
+        status: xhr.status,
+        headers: getResponseHeaders(xhr),
+        data: xhr.response,
+      };
+
+      if (isRequestOk(xhr)) {
+        if (cache) {
+          cache.pushResponse(params, response);
+        }
+        next(response);
+        complete();
+      } else {
+        error(response);
+      }
+      finished = true;
+    };
+
+    xhr.onerror = () => {
+      const response = {
+        status: xhr.status,
+        headers: getResponseHeaders(xhr),
+        data: xhr.statusText,
+      };
+      error(response);
+      finished = true;
+    };
+
+    const urlToCall = query ? `${url}?${stringify(query)}` : url;
+    xhr.open(method, urlToCall);
+    if (headers) setHeaders(xhr, headers);
+    xhr.send(formatBody(body));
+
+    return () => {
+      if (!finished) {
+        xhr.abort();
+      }
+    };
   };
+}
+
+function httpRequest<T = any>(params: RequestParams): Source<RequestResponse<T>> {
+  return createSource(httpRequestFunc<T>(params));
 }
 
 export default httpRequest;
