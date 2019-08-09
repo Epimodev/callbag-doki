@@ -13,7 +13,7 @@ describe('sources/interval', () => {
     const unsubscribe = subscribe(source)({ next });
 
     setTimeout(() => {
-      expect(next.mock.calls.length).toBe(5);
+      expect(next).toBeCalledTimes(5);
 
       unsubscribe();
       done();
