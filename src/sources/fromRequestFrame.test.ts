@@ -8,7 +8,7 @@ const nativeCancelRaf = global.cancelAnimationFrame;
 describe('sources/fromRequestFrame', () => {
   beforeEach(() => {
     global.requestAnimationFrame = jest.fn((callback: () => void) => {
-      setTimeout(callback, 16);
+      return setTimeout(callback, 16);
     });
     global.cancelAnimationFrame = jest.fn((handler: number) => {
       clearTimeout(handler);
@@ -56,11 +56,11 @@ describe('sources/fromRequestFrame', () => {
     setTimeout(() => {
       unsubscribe();
 
-      nbCall = (cancelAnimationFrame as jest.Mock).mock.calls.length;
+      nbCall = (requestAnimationFrame as jest.Mock).mock.calls.length;
     }, 100);
 
     setTimeout(() => {
-      expect(cancelAnimationFrame).toBeCalledTimes(nbCall);
+      expect(requestAnimationFrame).toBeCalledTimes(nbCall);
 
       done();
     }, 200);
