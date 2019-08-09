@@ -46,7 +46,7 @@ describe('sources/fromRequestFrame', () => {
     }, 100);
   });
 
-  test("shoudn't send values after unsubscribe", done => {
+  test("shouldn't send values after unsubscribe", done => {
     const source = fromRequestFrame();
 
     const unsubscribe = subscribe(source)({});
@@ -64,5 +64,25 @@ describe('sources/fromRequestFrame', () => {
 
       done();
     }, 200);
+  });
+
+  test('should complete and stop send values after duration', done => {
+    const source = fromRequestFrame(100);
+    const complete = jest.fn();
+
+    subscribe(source)({ complete });
+
+    let nbCall = 0;
+
+    setTimeout(() => {
+      expect(complete).toBeCalledTimes(1);
+      nbCall = (requestAnimationFrame as jest.Mock).mock.calls.length;
+    }, 150);
+
+    setTimeout(() => {
+      expect(requestAnimationFrame).toBeCalledTimes(nbCall);
+
+      done();
+    }, 250);
   });
 });
