@@ -11,7 +11,7 @@ export type CreateSourceParam<V> = (
   next: (value: V) => void,
   complete: () => void,
   error: (err: any) => void,
-) => (() => void) | undefined;
+) => (() => void) | void;
 
 export function createSource<O>(fn: CreateSourceParam<O>): Source<O> {
   // @ts-ignore
