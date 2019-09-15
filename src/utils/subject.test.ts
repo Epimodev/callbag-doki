@@ -355,12 +355,29 @@ describe('utils/subject', () => {
       const subject = createReplaySubject<number>();
       subject.next(1);
       subject.next(2);
+      subject.next(3);
+
+      subject.subscribe({ next });
+
+      expect(next).toHaveBeenCalledTimes(3);
+      expect(next).toHaveBeenNthCalledWith(1, 1);
+      expect(next).toHaveBeenNthCalledWith(2, 2);
+      expect(next).toHaveBeenNthCalledWith(3, 3);
+    });
+
+    test('should receive 2 last values on subscription', () => {
+      const next = jest.fn();
+
+      const subject = createReplaySubject<number>(2);
+      subject.next(1);
+      subject.next(2);
+      subject.next(3);
 
       subject.subscribe({ next });
 
       expect(next).toHaveBeenCalledTimes(2);
-      expect(next).toHaveBeenNthCalledWith(1, 1);
-      expect(next).toHaveBeenNthCalledWith(2, 2);
+      expect(next).toHaveBeenNthCalledWith(1, 2);
+      expect(next).toHaveBeenNthCalledWith(2, 3);
     });
   });
 

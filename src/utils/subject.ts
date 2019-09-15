@@ -77,7 +77,7 @@ function createBehaviorSubject<T>(): Subject<T> {
   };
 }
 
-function createReplaySubject<T>(): Subject<T> {
+function createReplaySubject<T>(bufferSize = Infinity): Subject<T> {
   const subject = createSubject<T>();
   const values: T[] = [];
 
@@ -96,6 +96,9 @@ function createReplaySubject<T>(): Subject<T> {
   return {
     next: value => {
       values.push(value);
+      if (values.length > bufferSize) {
+        values.shift();
+      }
       subject.next(value);
     },
     error: subject.error,
