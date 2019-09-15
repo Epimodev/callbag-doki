@@ -122,30 +122,35 @@ describe('utils/subject', () => {
       const next1 = jest.fn();
       const next2 = jest.fn();
 
-      const subject = createBehaviorSubject<number>();
+      const subject = createBehaviorSubject<number>(0);
       subject.subscribe({ next: next1 });
       subject.subscribe({ next: next2 });
+
+      expect(next1).toHaveBeenCalledTimes(1);
+      expect(next1).toHaveBeenNthCalledWith(1, 0);
+      expect(next2).toHaveBeenCalledTimes(1);
+      expect(next2).toHaveBeenNthCalledWith(1, 0);
 
       subject.next(1);
       subject.next(2);
       subject.next(3);
 
-      expect(next1).toHaveBeenCalledTimes(3);
-      expect(next1).toHaveBeenNthCalledWith(1, 1);
-      expect(next1).toHaveBeenNthCalledWith(2, 2);
-      expect(next1).toHaveBeenNthCalledWith(3, 3);
+      expect(next1).toHaveBeenCalledTimes(4);
+      expect(next1).toHaveBeenNthCalledWith(2, 1);
+      expect(next1).toHaveBeenNthCalledWith(3, 2);
+      expect(next1).toHaveBeenNthCalledWith(4, 3);
 
-      expect(next2).toHaveBeenCalledTimes(3);
-      expect(next2).toHaveBeenNthCalledWith(1, 1);
-      expect(next2).toHaveBeenNthCalledWith(2, 2);
-      expect(next2).toHaveBeenNthCalledWith(3, 3);
+      expect(next2).toHaveBeenCalledTimes(4);
+      expect(next2).toHaveBeenNthCalledWith(2, 1);
+      expect(next2).toHaveBeenNthCalledWith(3, 2);
+      expect(next2).toHaveBeenNthCalledWith(4, 3);
     });
 
     test('should receive error', () => {
       const error1 = jest.fn();
       const error2 = jest.fn();
 
-      const subject = createBehaviorSubject<number>();
+      const subject = createBehaviorSubject<number>(0);
       subject.subscribe({ error: error1 });
       subject.subscribe({ error: error2 });
 
@@ -159,7 +164,7 @@ describe('utils/subject', () => {
       const complete1 = jest.fn();
       const complete2 = jest.fn();
 
-      const subject = createBehaviorSubject<number>();
+      const subject = createBehaviorSubject<number>(0);
       subject.subscribe({ complete: complete1 });
       subject.subscribe({ complete: complete2 });
 
@@ -173,7 +178,7 @@ describe('utils/subject', () => {
       const next1 = jest.fn();
       const next2 = jest.fn();
 
-      const subject = createBehaviorSubject<number>();
+      const subject = createBehaviorSubject<number>(0);
       subject.subscribe({ next: next1 });
       const unsubscribe = subject.subscribe({ next: next2 });
 
@@ -182,21 +187,23 @@ describe('utils/subject', () => {
       unsubscribe();
       subject.next(3);
 
-      expect(next1).toHaveBeenCalledTimes(3);
-      expect(next1).toHaveBeenNthCalledWith(1, 1);
-      expect(next1).toHaveBeenNthCalledWith(2, 2);
-      expect(next1).toHaveBeenNthCalledWith(3, 3);
+      expect(next1).toHaveBeenCalledTimes(4);
+      expect(next1).toHaveBeenNthCalledWith(1, 0);
+      expect(next1).toHaveBeenNthCalledWith(2, 1);
+      expect(next1).toHaveBeenNthCalledWith(3, 2);
+      expect(next1).toHaveBeenNthCalledWith(4, 3);
 
-      expect(next2).toHaveBeenCalledTimes(2);
-      expect(next2).toHaveBeenNthCalledWith(1, 1);
-      expect(next2).toHaveBeenNthCalledWith(2, 2);
+      expect(next2).toHaveBeenCalledTimes(3);
+      expect(next2).toHaveBeenNthCalledWith(1, 0);
+      expect(next2).toHaveBeenNthCalledWith(2, 1);
+      expect(next2).toHaveBeenNthCalledWith(3, 2);
     });
 
     test("shouldn't receive error before and after unsubscribe", () => {
       const error1 = jest.fn();
       const error2 = jest.fn();
 
-      const subject = createBehaviorSubject<number>();
+      const subject = createBehaviorSubject<number>(0);
       subject.subscribe({ error: error1 });
 
       subject.error('Error message 1');
@@ -213,7 +220,7 @@ describe('utils/subject', () => {
       const complete1 = jest.fn();
       const complete2 = jest.fn();
 
-      const subject = createBehaviorSubject<number>();
+      const subject = createBehaviorSubject<number>(0);
       subject.subscribe({ complete: complete1 });
 
       subject.complete();
@@ -229,7 +236,7 @@ describe('utils/subject', () => {
     test('should receive last value on subscription', () => {
       const next = jest.fn();
 
-      const subject = createBehaviorSubject<number>();
+      const subject = createBehaviorSubject<number>(0);
       subject.next(1);
       subject.next(2);
 

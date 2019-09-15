@@ -52,16 +52,14 @@ function createSubject<T>(): Subject<T> {
   };
 }
 
-function createBehaviorSubject<T>(): Subject<T> {
+function createBehaviorSubject<T>(initialValue: T): Subject<T> {
   const subject = createSubject<T>();
-  let lastValue: T | undefined = undefined;
+  let lastValue: T = initialValue;
 
   const subscribeSubject = (listener: Observer<T> | Listener<T>): Unsubscribe => {
     const observer: Observer<T> = typeof listener === 'function' ? { next: listener } : listener;
 
-    if (lastValue !== undefined) {
-      observer.next && observer.next(lastValue);
-    }
+    observer.next && observer.next(lastValue);
 
     return subject.subscribe(observer);
   };
@@ -127,7 +125,7 @@ function createAsyncSubject<T>(): Subject<T> {
 }
 
 function createMulticastedSource<T>(source: Source<T>): Subject<T> {
-  const subject = createBehaviorSubject<T>();
+  const subject = createBehaviorSubject<T | undefined>(undefined);
   let count = 0;
   let unsubscribe: Unsubscribe | undefined;
 
@@ -141,7 +139,11 @@ function createMulticastedSource<T>(source: Source<T>): Subject<T> {
 
   const subscribeSubject = (listener: Observer<T> | Listener<T>): Unsubscribe => {
     const observer: Observer<T> = typeof listener === 'function' ? { next: listener } : listener;
-    const unsubscribeObserver = subject.subscribe(observer);
+    const unsubscribeObserver = subject.subscribe({
+      next: observer.next ? value => value !== undefined && observer.next!(value) : undefined,
+      error: observer.error,
+      complete: observer.complete,
+    });
     count += 1;
 
     if (unsubscribe === undefined) {
