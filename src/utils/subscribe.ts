@@ -6,17 +6,10 @@ import {
   Callbag,
   Source,
   Sink,
+  Listener,
+  Observer,
+  Unsubscribe,
 } from '../index';
-
-type Listener<T> = (value: T) => void;
-
-interface Observer<T> {
-  next?: Listener<T>;
-  error?: (error?: any) => void;
-  complete?: () => void;
-}
-
-type Unsubscribe = () => void;
 
 function subscribe<T>(source: Source<T>): (listener: Observer<T> | Listener<T>) => Unsubscribe {
   return (listener: Observer<T> | Listener<T>): Unsubscribe => {
