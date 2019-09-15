@@ -124,66 +124,37 @@ function createAsyncSubject<T>(): Subject<T> {
 }
 
 function createMulticastedSource<T>(source: Source<T>): Subject<T> {
-  const observers: Observer<T>[] = [];
+  const subject = createBehaviorSubject<T>();
+  let count = 0;
   let unsubscribe: Unsubscribe | undefined;
-  let value: T | undefined;
 
-  const next = (newValue: T) => {
-    value = newValue;
-    for (let i = 0, l = observers.length; i < l; i += 1) {
-      const observer = observers[i];
-      observer.next && observer.next(newValue);
-    }
-  };
-  const error = (err: any) => {
-    for (let i = 0, l = observers.length; i < l; i += 1) {
-      const observer = observers[i];
-      observer.error && observer.error(err);
-    }
-  };
-  const complete = () => {
-    for (let i = 0, l = observers.length; i < l; i += 1) {
-      const observer = observers[i];
-      observer.complete && observer.complete();
-    }
-  };
+  const unsubscribeSubject = () => {
+    count -= 1;
 
-  const subscribeSource = (): Unsubscribe => {
-    return subscribe(source)({ next, error, complete });
-  };
-
-  const unsubscribeSubject = (observer: Observer<T>) => {
-    const index = observers.indexOf(observer);
-    observers.splice(index, 1);
-
-    if (observers.length === 0 && unsubscribe) {
+    if (count === 0 && unsubscribe) {
       unsubscribe();
-      unsubscribe = undefined;
     }
   };
 
   const subscribeSubject = (listener: Observer<T> | Listener<T>): Unsubscribe => {
     const observer: Observer<T> = typeof listener === 'function' ? { next: listener } : listener;
-
-    if (value !== undefined) {
-      observer.next && observer.next(value);
-    }
-
-    observers.push(observer);
+    const unsubscribeObserver = subject.subscribe(observer);
+    count += 1;
 
     if (unsubscribe === undefined) {
-      unsubscribe = subscribeSource();
+      unsubscribe = subscribe(source)(subject);
     }
 
     return () => {
-      unsubscribeSubject(observer);
+      unsubscribeObserver();
+      unsubscribeSubject();
     };
   };
 
   return {
-    next,
-    error,
-    complete,
+    next: subject.next,
+    error: subject.error,
+    complete: subject.complete,
     subscribe: subscribeSubject,
   };
 }

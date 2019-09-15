@@ -364,7 +364,7 @@ describe('utils/subject', () => {
     });
   });
 
-  describe.only('create async subject', () => {
+  describe('create async subject', () => {
     test("shouldn't receive values without complete", () => {
       const next1 = jest.fn();
       const next2 = jest.fn();
