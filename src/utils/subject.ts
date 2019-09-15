@@ -52,6 +52,33 @@ function createSubject<T>(): Subject<T> {
   };
 }
 
+function createBehaviorSubject<T>(): Subject<T> {
+  const subject = createSubject<T>();
+  let lastValue: T | undefined = undefined;
+
+  const behaviorNext = (value: T) => {
+    lastValue = value;
+    subject.next(value);
+  };
+
+  const subscribeSubject = (listener: Observer<T> | Listener<T>): Unsubscribe => {
+    const observer: Observer<T> = typeof listener === 'function' ? { next: listener } : listener;
+
+    if (lastValue !== undefined) {
+      observer.next && observer.next(lastValue);
+    }
+
+    return subject.subscribe(observer);
+  };
+
+  return {
+    next: behaviorNext,
+    error: subject.error,
+    complete: subject.complete,
+    subscribe: subscribeSubject,
+  };
+}
+
 function createMulticastedSource<T>(source: Source<T>): Subject<T> {
   const observers: Observer<T>[] = [];
   let unsubscribe: Unsubscribe | undefined;
@@ -117,4 +144,4 @@ function createMulticastedSource<T>(source: Source<T>): Subject<T> {
   };
 }
 
-export { createSubject, createMulticastedSource, Subject };
+export { createSubject, createBehaviorSubject, createMulticastedSource, Subject };
