@@ -1,8 +1,8 @@
 import { Operator } from '../index';
-import { createOperator2 } from './';
+import { createOperator } from './';
 
 function count<I>(): Operator<I, number> {
-  return createOperator2(observer => {
+  return createOperator(observer => {
     let count = 0;
 
     return {

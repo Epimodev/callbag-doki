@@ -1,29 +1,23 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../index';
-import { createOperator, CreateOperatorParam } from './';
+import { Operator } from '../index';
+import { createOperator } from './';
 
 type Reduce<I, O> = (acc: O, value: I) => O;
 
-function reduceFunc<I, O>(reduce: Reduce<I, O>, seed: O): CreateOperatorParam<I, O> {
-  let acc = seed;
+function reduce<I, O>(reducer: Reduce<I, O>, seed: O): Operator<I, O> {
+  return createOperator(observer => {
+    let acc = seed;
 
-  return (output: Sink<O>): Sink<I> => (type: CallbagType, payload: any) => {
-    switch (type) {
-      case CALLBAG_START:
-        output(type, payload);
-        break;
-      case CALLBAG_RECEIVE:
-        acc = reduce(acc, payload);
-        break;
-      case CALLBAG_FINISHING:
-        output(CALLBAG_RECEIVE, acc);
-        output(type, payload);
-        break;
-    }
-  };
-}
-
-function reduce<I, O>(reduce: Reduce<I, O>, seed: O) {
-  return createOperator(reduceFunc(reduce, seed));
+    return {
+      next: value => {
+        acc = reducer(acc, value);
+      },
+      error: observer.error,
+      complete: () => {
+        observer.next(acc);
+        observer.complete();
+      },
+    };
+  });
 }
 
 export default reduce;

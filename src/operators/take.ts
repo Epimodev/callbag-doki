@@ -1,8 +1,8 @@
 import { Operator } from '../index';
-import { createOperator2 } from './';
+import { createOperator } from './';
 
 function take<I>(max: number): Operator<I, I> {
-  return createOperator2((observer, unsubscribe) => {
+  return createOperator((observer, unsubscribe) => {
     let taken = 0;
 
     return {

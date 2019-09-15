@@ -1,12 +1,5 @@
-import {
-  CALLBAG_START,
-  CALLBAG_RECEIVE,
-  CALLBAG_FINISHING,
-  CallbagType,
-  Callbag,
-  Sink,
-} from '../index';
-import { createOperator, CreateOperatorParam } from './';
+import { Operator } from '../index';
+import { createOperator } from './';
 
 interface ThrottleConfig {
   leading: boolean;
@@ -18,51 +11,44 @@ const defaultThrottleConfig: ThrottleConfig = {
   trailing: false,
 };
 
-function throttleFunc<I>(
+function throttle<I>(
   duration: number,
-  config = defaultThrottleConfig,
-): CreateOperatorParam<I, I> {
-  let value: I;
-  let timeout = 0;
+  { leading, trailing } = defaultThrottleConfig,
+): Operator<I, I> {
+  return createOperator(observer => {
+    let lastValue: I;
+    let timeout = 0;
 
-  return (output: Sink<I>): Sink<I> => (type: CallbagType, payload: any) => {
-    switch (type) {
-      case CALLBAG_START:
-        const talkback: Callbag<void, I> = (t: CallbagType, p: any) => {
-          if (t === CALLBAG_FINISHING) {
-            clearTimeout(timeout);
-          }
-          payload(t, p);
-        };
-
-        output(type, talkback);
-        break;
-      case CALLBAG_RECEIVE:
-        value = payload;
+    return {
+      next: value => {
+        lastValue = value;
 
         if (!timeout) {
-          if (config.leading) {
-            output(CALLBAG_RECEIVE, value);
+          if (leading) {
+            observer.next(lastValue);
           }
 
           timeout = setTimeout(() => {
             timeout = 0;
-            if (config.trailing) {
-              output(CALLBAG_RECEIVE, value);
+            if (trailing) {
+              observer.next(lastValue);
             }
           }, duration);
         }
-        break;
-      case CALLBAG_FINISHING:
+      },
+      error: err => {
         clearTimeout(timeout);
-        output(type, payload);
-        break;
-    }
-  };
-}
-
-function throttle<I>(duration: number, config?: ThrottleConfig) {
-  return createOperator(throttleFunc<I>(duration, config));
+        observer.error(err);
+      },
+      complete: () => {
+        clearTimeout(timeout);
+        observer.complete();
+      },
+      clear: () => {
+        clearTimeout(timeout);
+      },
+    };
+  });
 }
 
 export default throttle;

@@ -1,29 +1,23 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../index';
-import { createOperator, CreateOperatorParam } from './';
+import { Operator } from '../index';
+import { createOperator } from './';
 
-function minFunc(): CreateOperatorParam<number, number | undefined> {
-  let min: number;
+function min(): Operator<number, number> {
+  return createOperator(observer => {
+    let min = Infinity;
 
-  return (output: Sink<number | undefined>): Sink<number> => (type: CallbagType, payload: any) => {
-    switch (type) {
-      case CALLBAG_START:
-        output(type, payload);
-        break;
-      case CALLBAG_RECEIVE:
-        if (min === undefined || payload < min) {
-          min = payload;
+    return {
+      next: value => {
+        if (min === undefined || value < min) {
+          min = value;
         }
-        break;
-      case CALLBAG_FINISHING:
-        output(CALLBAG_RECEIVE, min);
-        output(type, payload);
-        break;
-    }
-  };
-}
-
-function min() {
-  return createOperator(minFunc());
+      },
+      error: observer.error,
+      complete: () => {
+        observer.next(min);
+        observer.complete();
+      },
+    };
+  });
 }
 
 export default min;

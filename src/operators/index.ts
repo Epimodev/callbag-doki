@@ -15,25 +15,12 @@ export interface OperatorObserver<T> extends Required<Observer<T>> {
   clear?: Unsubscribe;
 }
 
-export type CreateOperatorParam<I, O> = (output: Sink<O>) => Sink<I>;
-
-export type CreateOperatorParam2<I, O> = (
+export type CreateOperatorParam<I, O> = (
   observer: Required<Observer<O>>,
   unsubscribe: Unsubscribe,
 ) => OperatorObserver<I>;
 
 export function createOperator<I, O>(fn: CreateOperatorParam<I, O>): Operator<I, O> {
-  return (input: Source<I>): Source<O> => {
-    // @ts-ignore
-    return (start: CallbagType, output: Sink<O>) => {
-      if (start === CALLBAG_START) {
-        input(CALLBAG_START, fn(output));
-      }
-    };
-  };
-}
-
-export function createOperator2<I, O>(fn: CreateOperatorParam2<I, O>): Operator<I, O> {
   return (input: Source<I>): Source<O> => {
     // @ts-ignore
     return (start: CallbagType, output: Sink<O>) => {

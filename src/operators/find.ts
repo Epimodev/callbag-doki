@@ -1,42 +1,20 @@
-import {
-  CALLBAG_START,
-  CALLBAG_RECEIVE,
-  CALLBAG_FINISHING,
-  CallbagType,
-  Callbag,
-  Sink,
-} from '../index';
-import { createOperator, CreateOperatorParam } from './';
+import { Operator } from '../index';
+import { createOperator } from './';
 
-function findFunc<I>(func: (value: I) => boolean): CreateOperatorParam<I, I> {
-  let finded = false;
-  let sourceTalkback: Callbag<void, I>;
-
-  return (output: Sink<I>): Sink<I> => (type: CallbagType, payload: any) => {
-    switch (type) {
-      case CALLBAG_START:
-        sourceTalkback = payload;
-        output(type, payload);
-        break;
-      case CALLBAG_RECEIVE:
-        if (!finded && func(payload)) {
-          finded = true;
-          output(CALLBAG_RECEIVE, payload);
-          output(CALLBAG_FINISHING);
-          sourceTalkback(CALLBAG_FINISHING);
+function find<I>(predicate: (value: I) => boolean): Operator<I, I> {
+  return createOperator((observer, unsubscribe) => {
+    return {
+      next: value => {
+        if (predicate(value)) {
+          unsubscribe();
+          observer.next(value);
+          observer.complete();
         }
-        break;
-      case CALLBAG_FINISHING:
-        if (!finded) {
-          output(type, payload);
-        }
-        break;
-    }
-  };
-}
-
-function find<I>(func: (value: I) => boolean) {
-  return createOperator(findFunc(func));
+      },
+      error: observer.error,
+      complete: observer.complete,
+    };
+  });
 }
 
 export default find;

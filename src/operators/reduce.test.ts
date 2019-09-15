@@ -60,7 +60,7 @@ describe('operators/reduce', () => {
     expect(cancelMock).toBeCalledTimes(1);
   });
 
-  test('should call map function for each value received', done => {
+  test('should call reducer for each value received', done => {
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50 });
     const reduceFunc = jest.fn();

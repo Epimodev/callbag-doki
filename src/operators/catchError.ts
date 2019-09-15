@@ -1,9 +1,9 @@
 import { Source, Operator, Unsubscribe } from '../index';
 import subscribe from '../utils/subscribe';
-import { createOperator2 } from './';
+import { createOperator } from './';
 
 function catchError<I, O>(handler: (error: any) => Source<O>): Operator<I, I | O> {
-  return createOperator2(observer => {
+  return createOperator(observer => {
     let unsubscribe: Unsubscribe | undefined;
 
     return {

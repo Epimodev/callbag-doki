@@ -1,29 +1,23 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../index';
-import { createOperator, CreateOperatorParam } from './';
+import { Operator } from '../index';
+import { createOperator } from './';
 
-function maxFunc(): CreateOperatorParam<number, number | undefined> {
-  let max: number;
+function max(): Operator<number, number> {
+  return createOperator(observer => {
+    let max = -Infinity;
 
-  return (output: Sink<number | undefined>): Sink<number> => (type: CallbagType, payload: any) => {
-    switch (type) {
-      case CALLBAG_START:
-        output(type, payload);
-        break;
-      case CALLBAG_RECEIVE:
-        if (max === undefined || payload > max) {
-          max = payload;
+    return {
+      next: value => {
+        if (max === undefined || value > max) {
+          max = value;
         }
-        break;
-      case CALLBAG_FINISHING:
-        output(CALLBAG_RECEIVE, max);
-        output(type, payload);
-        break;
-    }
-  };
-}
-
-function max() {
-  return createOperator(maxFunc());
+      },
+      error: observer.error,
+      complete: () => {
+        observer.next(max);
+        observer.complete();
+      },
+    };
+  });
 }
 
 export default max;

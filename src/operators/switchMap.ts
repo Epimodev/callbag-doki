@@ -1,80 +1,57 @@
-import {
-  CALLBAG_START,
-  CALLBAG_RECEIVE,
-  CALLBAG_FINISHING,
-  CallbagType,
-  Callbag,
-  Source,
-  Sink,
-} from '../index';
+import { Source, Operator, Unsubscribe, Observer } from '../index';
 import subscribe from '../utils/subscribe';
-import { createOperator, CreateOperatorParam } from './';
+import { createOperator } from './';
 
-function switchMapFunc<I, O>(mapper: (value: I) => Source<O>): CreateOperatorParam<I, O> {
-  let hasCurrentSubscription = false;
-  let completed = false;
-  let finished = false;
-  let sourceTalkback: Callbag<void, I>;
-  let unsubscribePrevious: () => void = () => {};
+function switchMap<I, O>(mapper: (value: I) => Source<O>): Operator<I, O> {
+  return createOperator((observer, unsubscribe) => {
+    let hasCurrentSubscription = false;
+    let completed = false;
+    let finished = false;
+    let unsubscribePrevious: Unsubscribe = () => {};
 
-  return (output: Sink<O>): Sink<I> => (type: CallbagType, payload: any) => {
-    switch (type) {
-      case CALLBAG_START:
-        sourceTalkback = payload;
-        const talkback: Callbag<void, I | O> = (t: CallbagType, p: any) => {
-          if (t === CALLBAG_FINISHING) {
-            unsubscribePrevious();
-          }
-          sourceTalkback(t as any, p);
-        };
+    const mappedObserver: Observer<O> = {
+      next: observer.next,
+      error: (err: any) => {
+        hasCurrentSubscription = false;
+        finished = true;
+        observer.error(err);
+        unsubscribe();
+      },
+      complete: () => {
+        hasCurrentSubscription = false;
+        if (completed && !finished) {
+          finished = true;
+          observer.complete();
+        }
+      },
+    };
 
-        output(type, talkback);
-        break;
-      case CALLBAG_RECEIVE:
+    return {
+      next: value => {
         unsubscribePrevious();
         hasCurrentSubscription = true;
 
-        const next = (value: O) => output(CALLBAG_RECEIVE, value);
-        const error = (error: any) => {
-          hasCurrentSubscription = false;
-          finished = true;
-          output(CALLBAG_FINISHING, error);
-          sourceTalkback(CALLBAG_FINISHING, error);
-        };
-        const complete = () => {
-          hasCurrentSubscription = false;
-          if (completed && !finished) {
-            finished = true;
-            output(CALLBAG_FINISHING);
-          }
-        };
-
-        const source = mapper(payload);
-        unsubscribePrevious = subscribe(source)({ next, error, complete });
-        break;
-      case CALLBAG_FINISHING:
+        const source = mapper(value);
+        unsubscribePrevious = subscribe(source)(mappedObserver);
+      },
+      error: err => {
         completed = true;
-
-        if (payload) {
-          // if there is an error
-          unsubscribePrevious();
+        finished = true;
+        unsubscribePrevious();
+        observer.error(err);
+      },
+      complete: () => {
+        completed = true;
+        if (!hasCurrentSubscription && !finished) {
           finished = true;
-          output(CALLBAG_FINISHING, payload);
-        } else {
-          // if source complete without error
-          if (!hasCurrentSubscription && !finished) {
-            finished = true;
-            output(CALLBAG_FINISHING);
-          }
+          observer.complete();
         }
-
-        break;
-    }
-  };
-}
-
-function switchMap<I, O>(mapper: (value: I) => Source<O>) {
-  return createOperator(switchMapFunc(mapper));
+      },
+      clear: () => {
+        unsubscribePrevious();
+      },
+    };
+  });
 }
 
 export default switchMap;
