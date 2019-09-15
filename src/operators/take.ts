@@ -1,53 +1,24 @@
-import {
-  CALLBAG_START,
-  CALLBAG_RECEIVE,
-  CALLBAG_FINISHING,
-  CallbagType,
-  Callbag,
-  Sink,
-} from '../index';
-import { createOperator, CreateOperatorParam } from './';
+import { Operator } from '../index';
+import { createOperator2 } from './';
 
-function takeFunc<T>(max: number): CreateOperatorParam<T, T> {
-  let taken = 0;
-  let sourceTalkback: Callbag<void, T>;
-  let finished = false;
-  let outputCalled = false;
+function take<I>(max: number): Operator<I, I> {
+  return createOperator2((observer, unsubscribe) => {
+    let taken = 0;
 
-  const talkback: Callbag<void, T> = (type: CallbagType, payload: any) => {
-    if (type === CALLBAG_FINISHING) {
-      finished = true;
-    }
-    sourceTalkback(type as any, payload);
-  };
+    return {
+      next: value => {
+        observer.next(value);
 
-  return (output: Sink<T>): Sink<T> => (type: CallbagType, payload: any) => {
-    switch (type) {
-      case CALLBAG_START:
-        sourceTalkback = payload;
-        output(type, talkback);
-        break;
-      case CALLBAG_RECEIVE:
         taken += 1;
-        output(CALLBAG_RECEIVE, payload);
-
-        if (taken === max && !finished) {
-          outputCalled = true;
-          output(CALLBAG_FINISHING);
-          sourceTalkback(CALLBAG_FINISHING);
+        if (taken >= max) {
+          unsubscribe();
+          observer.complete();
         }
-        break;
-      case CALLBAG_FINISHING:
-        if (!outputCalled) {
-          output(type, payload);
-        }
-        break;
-    }
-  };
-}
-
-function take<T>(max: number) {
-  return createOperator(takeFunc<T>(max));
+      },
+      error: observer.error,
+      complete: observer.complete,
+    };
+  });
 }
 
 export default take;

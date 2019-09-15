@@ -96,7 +96,7 @@ describe('operators/take', () => {
     }, 140);
   });
 
-  test('should cancel source adter 2 received values', done => {
+  test('should cancel source after 2 received values', done => {
     const cancelMock = jest.fn();
     const values = [5, 8, 3, 6, 2];
     const source = intervalValues({ values, duration: 50, cancelMock });

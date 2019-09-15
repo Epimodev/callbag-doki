@@ -1,27 +1,19 @@
-import { CALLBAG_START, CALLBAG_RECEIVE, CALLBAG_FINISHING, CallbagType, Sink } from '../index';
-import { createOperator, CreateOperatorParam } from './';
+import { Operator } from '../index';
+import { createOperator2 } from './';
 
-function countFunc<I>(): CreateOperatorParam<I, number> {
-  let count = 0;
+function count<I>(): Operator<I, number> {
+  return createOperator2(observer => {
+    let count = 0;
 
-  return (output: Sink<number>): Sink<I> => (type: CallbagType, payload: any) => {
-    switch (type) {
-      case CALLBAG_START:
-        output(type, payload);
-        break;
-      case CALLBAG_RECEIVE:
+    return {
+      next: () => {
         count += 1;
-        output(CALLBAG_RECEIVE, count);
-        break;
-      case CALLBAG_FINISHING:
-        output(type, payload);
-        break;
-    }
-  };
-}
-
-function count<I>() {
-  return createOperator(countFunc<I>());
+        observer.next(count);
+      },
+      error: observer.error,
+      complete: observer.complete,
+    };
+  });
 }
 
 export default count;
