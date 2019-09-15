@@ -2,6 +2,7 @@ import {
   createSubject,
   createBehaviorSubject,
   createReplaySubject,
+  createAsyncSubject,
   createMulticastedSource,
 } from './subject';
 import { intervalValues } from '../test/callbags';
@@ -360,6 +361,71 @@ describe('utils/subject', () => {
       expect(next).toHaveBeenCalledTimes(2);
       expect(next).toHaveBeenNthCalledWith(1, 1);
       expect(next).toHaveBeenNthCalledWith(2, 2);
+    });
+  });
+
+  describe.only('create async subject', () => {
+    test("shouldn't receive values without complete", () => {
+      const next1 = jest.fn();
+      const next2 = jest.fn();
+
+      const subject = createAsyncSubject<number>();
+      subject.subscribe({ next: next1 });
+      subject.subscribe({ next: next2 });
+
+      subject.next(1);
+      subject.next(2);
+      subject.next(3);
+
+      expect(next1).toHaveBeenCalledTimes(0);
+      expect(next2).toHaveBeenCalledTimes(0);
+    });
+
+    test('should receive error', () => {
+      const error1 = jest.fn();
+      const error2 = jest.fn();
+
+      const subject = createAsyncSubject<number>();
+      subject.subscribe({ error: error1 });
+      subject.subscribe({ error: error2 });
+
+      subject.error('Error message');
+
+      expect(error1).toHaveBeenCalledTimes(1);
+      expect(error2).toHaveBeenCalledTimes(1);
+    });
+
+    test('should complete', () => {
+      const complete1 = jest.fn();
+      const complete2 = jest.fn();
+
+      const subject = createAsyncSubject<number>();
+      subject.subscribe({ complete: complete1 });
+      subject.subscribe({ complete: complete2 });
+
+      subject.complete();
+
+      expect(complete1).toHaveBeenCalledTimes(1);
+      expect(complete2).toHaveBeenCalledTimes(1);
+    });
+
+    test('should receive last value after complete', () => {
+      const next1 = jest.fn();
+      const next2 = jest.fn();
+
+      const subject = createAsyncSubject<number>();
+      subject.subscribe({ next: next1 });
+      subject.subscribe({ next: next2 });
+
+      subject.next(1);
+      subject.next(2);
+      subject.next(3);
+      subject.complete();
+
+      expect(next1).toHaveBeenCalledTimes(1);
+      expect(next1).toHaveBeenNthCalledWith(1, 3);
+      expect(next2).toHaveBeenCalledTimes(1);
+      expect(next2).toHaveBeenNthCalledWith(1, 3);
     });
   });
 

@@ -104,6 +104,25 @@ function createReplaySubject<T>(): Subject<T> {
   };
 }
 
+function createAsyncSubject<T>(): Subject<T> {
+  const subject = createSubject<T>();
+  let lastValue: T | undefined = undefined;
+
+  return {
+    next: value => {
+      lastValue = value;
+    },
+    error: subject.error,
+    complete: () => {
+      if (lastValue !== undefined) {
+        subject.next(lastValue);
+      }
+      subject.complete();
+    },
+    subscribe: subject.subscribe,
+  };
+}
+
 function createMulticastedSource<T>(source: Source<T>): Subject<T> {
   const observers: Observer<T>[] = [];
   let unsubscribe: Unsubscribe | undefined;
@@ -173,6 +192,7 @@ export {
   createSubject,
   createBehaviorSubject,
   createReplaySubject,
+  createAsyncSubject,
   createMulticastedSource,
   Subject,
 };
