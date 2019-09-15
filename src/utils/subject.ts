@@ -56,11 +56,6 @@ function createBehaviorSubject<T>(): Subject<T> {
   const subject = createSubject<T>();
   let lastValue: T | undefined = undefined;
 
-  const behaviorNext = (value: T) => {
-    lastValue = value;
-    subject.next(value);
-  };
-
   const subscribeSubject = (listener: Observer<T> | Listener<T>): Unsubscribe => {
     const observer: Observer<T> = typeof listener === 'function' ? { next: listener } : listener;
 
@@ -72,7 +67,37 @@ function createBehaviorSubject<T>(): Subject<T> {
   };
 
   return {
-    next: behaviorNext,
+    next: value => {
+      lastValue = value;
+      subject.next(value);
+    },
+    error: subject.error,
+    complete: subject.complete,
+    subscribe: subscribeSubject,
+  };
+}
+
+function createReplaySubject<T>(): Subject<T> {
+  const subject = createSubject<T>();
+  const values: T[] = [];
+
+  const subscribeSubject = (listener: Observer<T> | Listener<T>): Unsubscribe => {
+    const observer: Observer<T> = typeof listener === 'function' ? { next: listener } : listener;
+
+    if (observer.next) {
+      for (let i = 0, l = values.length; i < l; i += 1) {
+        observer.next(values[i]);
+      }
+    }
+
+    return subject.subscribe(observer);
+  };
+
+  return {
+    next: value => {
+      values.push(value);
+      subject.next(value);
+    },
     error: subject.error,
     complete: subject.complete,
     subscribe: subscribeSubject,
@@ -144,4 +169,10 @@ function createMulticastedSource<T>(source: Source<T>): Subject<T> {
   };
 }
 
-export { createSubject, createBehaviorSubject, createMulticastedSource, Subject };
+export {
+  createSubject,
+  createBehaviorSubject,
+  createReplaySubject,
+  createMulticastedSource,
+  Subject,
+};

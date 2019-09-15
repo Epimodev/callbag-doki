@@ -1,4 +1,9 @@
-import { createSubject, createBehaviorSubject, createMulticastedSource } from './subject';
+import {
+  createSubject,
+  createBehaviorSubject,
+  createReplaySubject,
+  createMulticastedSource,
+} from './subject';
 import { intervalValues } from '../test/callbags';
 
 describe('utils/subject', () => {
@@ -231,6 +236,130 @@ describe('utils/subject', () => {
 
       expect(next).toHaveBeenCalledTimes(1);
       expect(next).toHaveBeenNthCalledWith(1, 2);
+    });
+  });
+
+  describe('create replay subject', () => {
+    test('should receive values', () => {
+      const next1 = jest.fn();
+      const next2 = jest.fn();
+
+      const subject = createReplaySubject<number>();
+      subject.subscribe({ next: next1 });
+      subject.subscribe({ next: next2 });
+
+      subject.next(1);
+      subject.next(2);
+      subject.next(3);
+
+      expect(next1).toHaveBeenCalledTimes(3);
+      expect(next1).toHaveBeenNthCalledWith(1, 1);
+      expect(next1).toHaveBeenNthCalledWith(2, 2);
+      expect(next1).toHaveBeenNthCalledWith(3, 3);
+
+      expect(next2).toHaveBeenCalledTimes(3);
+      expect(next2).toHaveBeenNthCalledWith(1, 1);
+      expect(next2).toHaveBeenNthCalledWith(2, 2);
+      expect(next2).toHaveBeenNthCalledWith(3, 3);
+    });
+
+    test('should receive error', () => {
+      const error1 = jest.fn();
+      const error2 = jest.fn();
+
+      const subject = createReplaySubject<number>();
+      subject.subscribe({ error: error1 });
+      subject.subscribe({ error: error2 });
+
+      subject.error('Error message');
+
+      expect(error1).toHaveBeenCalledTimes(1);
+      expect(error2).toHaveBeenCalledTimes(1);
+    });
+
+    test('should complete', () => {
+      const complete1 = jest.fn();
+      const complete2 = jest.fn();
+
+      const subject = createReplaySubject<number>();
+      subject.subscribe({ complete: complete1 });
+      subject.subscribe({ complete: complete2 });
+
+      subject.complete();
+
+      expect(complete1).toHaveBeenCalledTimes(1);
+      expect(complete2).toHaveBeenCalledTimes(1);
+    });
+
+    test("shouldn't receive value after unsubscribe", () => {
+      const next1 = jest.fn();
+      const next2 = jest.fn();
+
+      const subject = createReplaySubject<number>();
+      subject.subscribe({ next: next1 });
+      const unsubscribe = subject.subscribe({ next: next2 });
+
+      subject.next(1);
+      subject.next(2);
+      unsubscribe();
+      subject.next(3);
+
+      expect(next1).toHaveBeenCalledTimes(3);
+      expect(next1).toHaveBeenNthCalledWith(1, 1);
+      expect(next1).toHaveBeenNthCalledWith(2, 2);
+      expect(next1).toHaveBeenNthCalledWith(3, 3);
+
+      expect(next2).toHaveBeenCalledTimes(2);
+      expect(next2).toHaveBeenNthCalledWith(1, 1);
+      expect(next2).toHaveBeenNthCalledWith(2, 2);
+    });
+
+    test("shouldn't receive error before and after unsubscribe", () => {
+      const error1 = jest.fn();
+      const error2 = jest.fn();
+
+      const subject = createReplaySubject<number>();
+      subject.subscribe({ error: error1 });
+
+      subject.error('Error message 1');
+      const unsubscribe = subject.subscribe({ error: error2 });
+      subject.error('Error message 2');
+      unsubscribe();
+      subject.error('Error message 3');
+
+      expect(error1).toHaveBeenCalledTimes(3);
+      expect(error2).toHaveBeenCalledTimes(1);
+    });
+
+    test("shouldn't complete before and after unsubscribe", () => {
+      const complete1 = jest.fn();
+      const complete2 = jest.fn();
+
+      const subject = createReplaySubject<number>();
+      subject.subscribe({ complete: complete1 });
+
+      subject.complete();
+      const unsubscribe = subject.subscribe({ complete: complete2 });
+      subject.complete();
+      unsubscribe();
+      subject.complete();
+
+      expect(complete1).toHaveBeenCalledTimes(3);
+      expect(complete2).toHaveBeenCalledTimes(1);
+    });
+
+    test('should receive all values on subscription', () => {
+      const next = jest.fn();
+
+      const subject = createReplaySubject<number>();
+      subject.next(1);
+      subject.next(2);
+
+      subject.subscribe({ next });
+
+      expect(next).toHaveBeenCalledTimes(2);
+      expect(next).toHaveBeenNthCalledWith(1, 1);
+      expect(next).toHaveBeenNthCalledWith(2, 2);
     });
   });
 
