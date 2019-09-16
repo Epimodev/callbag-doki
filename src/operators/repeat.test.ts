@@ -2,7 +2,7 @@ import subscribe from '../utils/subscribe';
 import repeat from './repeat';
 import { intervalValues } from '../test/callbags';
 
-describe('operators/tap', () => {
+describe('operators/repeat', () => {
   test('should receive a message for each value from source', done => {
     const values = [5, 8, 3];
     const source = intervalValues({ values, duration: 50 });
