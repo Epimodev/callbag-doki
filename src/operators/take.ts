@@ -1,24 +1,32 @@
-import { Operator } from '../index';
-import { createOperator } from './';
+import { Operator, Observer, Unsubscribe } from '../index';
+import { createSource } from '../sources';
+import subscribe from '../utils/subscribe';
 
 function take<I>(max: number): Operator<I, I> {
-  return createOperator((observer, unsubscribe) => {
-    let taken = 0;
+  return source => {
+    return createSource((next, complete, error) => {
+      let taken = 0;
+      let unsubscribe: Unsubscribe = () => {};
 
-    return {
-      next: value => {
-        observer.next(value);
+      const observer: Observer<I> = {
+        next: value => {
+          next(value);
 
-        taken += 1;
-        if (taken >= max) {
-          unsubscribe();
-          observer.complete();
-        }
-      },
-      error: observer.error,
-      complete: observer.complete,
-    };
-  });
+          taken += 1;
+          if (taken >= max) {
+            unsubscribe();
+            complete();
+          }
+        },
+        error,
+        complete,
+      };
+
+      unsubscribe = subscribe(source)(observer);
+
+      return unsubscribe;
+    });
+  };
 }
 
 export default take;

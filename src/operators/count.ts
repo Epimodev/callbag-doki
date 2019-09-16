@@ -1,19 +1,24 @@
-import { Operator } from '../index';
-import { createOperator } from './';
+import { Operator, Observer } from '../index';
+import { createSource } from '../sources';
+import subscribe from '../utils/subscribe';
 
 function count<I>(): Operator<I, number> {
-  return createOperator(observer => {
-    let count = 0;
+  return source => {
+    return createSource((next, complete, error) => {
+      let count = 0;
 
-    return {
-      next: () => {
-        count += 1;
-        observer.next(count);
-      },
-      error: observer.error,
-      complete: observer.complete,
-    };
-  });
+      const observer: Observer<I> = {
+        next: () => {
+          count += 1;
+          next(count);
+        },
+        error,
+        complete,
+      };
+
+      return subscribe(source)(observer);
+    });
+  };
 }
 
 export default count;

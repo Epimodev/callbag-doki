@@ -1,23 +1,28 @@
-import { Operator } from '../index';
-import { createOperator } from './';
+import { Operator, Observer } from '../index';
+import { createSource } from '../sources';
+import subscribe from '../utils/subscribe';
 
 function min(): Operator<number, number> {
-  return createOperator(observer => {
-    let min = Infinity;
+  return source => {
+    return createSource((next, complete, error) => {
+      let min = Infinity;
 
-    return {
-      next: value => {
-        if (min === undefined || value < min) {
-          min = value;
-        }
-      },
-      error: observer.error,
-      complete: () => {
-        observer.next(min);
-        observer.complete();
-      },
-    };
-  });
+      const observer: Observer<number> = {
+        next: value => {
+          if (min === undefined || value < min) {
+            min = value;
+          }
+        },
+        error,
+        complete: () => {
+          next(min);
+          complete();
+        },
+      };
+
+      return subscribe(source)(observer);
+    });
+  };
 }
 
 export default min;

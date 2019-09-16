@@ -1,33 +1,40 @@
-import { Operator } from '../index';
-import { createOperator } from './';
+import { Operator, Observer } from '../index';
+import { createSource } from '../sources';
+import subscribe from '../utils/subscribe';
 
 function debounce<I>(duration: number): Operator<I, I> {
-  return createOperator(observer => {
-    let lastValue: I;
-    let timeout = 0;
+  return source => {
+    return createSource((next, complete, error) => {
+      let lastValue: I;
+      let timeout = 0;
 
-    return {
-      next: value => {
-        clearTimeout(timeout);
-        lastValue = value;
+      const observer: Observer<I> = {
+        next: value => {
+          clearTimeout(timeout);
+          lastValue = value;
 
-        timeout = setTimeout(() => {
-          observer.next(lastValue);
-        }, duration);
-      },
-      error: err => {
+          timeout = setTimeout(() => {
+            next(lastValue);
+          }, duration);
+        },
+        error: err => {
+          clearTimeout(timeout);
+          error(err);
+        },
+        complete: () => {
+          clearTimeout(timeout);
+          complete();
+        },
+      };
+
+      const unsubscribe = subscribe(source)(observer);
+
+      return () => {
         clearTimeout(timeout);
-        observer.error(err);
-      },
-      complete: () => {
-        clearTimeout(timeout);
-        observer.complete();
-      },
-      clear: () => {
-        clearTimeout(timeout);
-      },
-    };
-  });
+        unsubscribe();
+      };
+    });
+  };
 }
 
 export default debounce;

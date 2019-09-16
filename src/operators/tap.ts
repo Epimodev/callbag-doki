@@ -1,17 +1,22 @@
-import { Operator } from '../index';
-import { createOperator } from './';
+import { Operator, Observer } from '../index';
+import { createSource } from '../sources';
+import subscribe from '../utils/subscribe';
 
 function tap<I>(func: (value: I) => void): Operator<I, I> {
-  return createOperator(observer => {
-    return {
-      next: value => {
-        func(value);
-        observer.next(value);
-      },
-      error: observer.error,
-      complete: observer.complete,
-    };
-  });
+  return source => {
+    return createSource((next, complete, error) => {
+      const observer: Observer<I> = {
+        next: value => {
+          func(value);
+          next(value);
+        },
+        error,
+        complete,
+      };
+
+      return subscribe(source)(observer);
+    });
+  };
 }
 
 export default tap;

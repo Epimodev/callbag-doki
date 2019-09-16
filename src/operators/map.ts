@@ -1,16 +1,21 @@
-import { Operator } from '../index';
-import { createOperator } from './';
+import { Operator, Observer } from '../index';
+import { createSource } from '../sources';
+import subscribe from '../utils/subscribe';
 
 function map<I, O>(mapper: (value: I) => O): Operator<I, O> {
-  return createOperator(observer => {
-    return {
-      next: value => {
-        observer.next(mapper(value));
-      },
-      error: observer.error,
-      complete: observer.complete,
-    };
-  });
+  return source => {
+    return createSource((next, complete, error) => {
+      const observer: Observer<I> = {
+        next: value => {
+          next(mapper(value));
+        },
+        error,
+        complete,
+      };
+
+      return subscribe(source)(observer);
+    });
+  };
 }
 
 export default map;

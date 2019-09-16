@@ -1,5 +1,6 @@
-import { Operator } from '../index';
-import { createOperator } from './';
+import { Operator, Observer } from '../index';
+import { createSource } from '../sources';
+import subscribe from '../utils/subscribe';
 
 interface ThrottleConfig {
   leading: boolean;
@@ -15,40 +16,46 @@ function throttle<I>(
   duration: number,
   { leading, trailing } = defaultThrottleConfig,
 ): Operator<I, I> {
-  return createOperator(observer => {
-    let lastValue: I;
-    let timeout = 0;
+  return source => {
+    return createSource((next, complete, error) => {
+      let lastValue: I;
+      let timeout = 0;
 
-    return {
-      next: value => {
-        lastValue = value;
+      const observer: Observer<I> = {
+        next: value => {
+          lastValue = value;
 
-        if (!timeout) {
-          if (leading) {
-            observer.next(lastValue);
-          }
-
-          timeout = setTimeout(() => {
-            timeout = 0;
-            if (trailing) {
-              observer.next(lastValue);
+          if (!timeout) {
+            if (leading) {
+              next(lastValue);
             }
-          }, duration);
-        }
-      },
-      error: err => {
+
+            timeout = setTimeout(() => {
+              timeout = 0;
+              if (trailing) {
+                next(lastValue);
+              }
+            }, duration);
+          }
+        },
+        error: err => {
+          clearTimeout(timeout);
+          error(err);
+        },
+        complete: () => {
+          clearTimeout(timeout);
+          complete();
+        },
+      };
+
+      const unsubscribe = subscribe(source)(observer);
+
+      return () => {
         clearTimeout(timeout);
-        observer.error(err);
-      },
-      complete: () => {
-        clearTimeout(timeout);
-        observer.complete();
-      },
-      clear: () => {
-        clearTimeout(timeout);
-      },
-    };
-  });
+        unsubscribe();
+      };
+    });
+  };
 }
 
 export default throttle;

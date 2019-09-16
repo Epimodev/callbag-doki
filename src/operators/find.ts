@@ -1,20 +1,29 @@
-import { Operator } from '../index';
-import { createOperator } from './';
+import { Operator, Observer } from '../index';
+import { createSource } from '../sources';
+import subscribe from '../utils/subscribe';
 
 function find<I>(predicate: (value: I) => boolean): Operator<I, I> {
-  return createOperator((observer, unsubscribe) => {
-    return {
-      next: value => {
-        if (predicate(value)) {
-          unsubscribe();
-          observer.next(value);
-          observer.complete();
-        }
-      },
-      error: observer.error,
-      complete: observer.complete,
-    };
-  });
+  return source => {
+    return createSource((next, complete, error) => {
+      let unsubscribe = () => {};
+
+      const observer: Observer<I> = {
+        next: value => {
+          if (predicate(value)) {
+            unsubscribe();
+            next(value);
+            complete();
+          }
+        },
+        error,
+        complete,
+      };
+
+      unsubscribe = subscribe(source)(observer);
+
+      return unsubscribe;
+    });
+  };
 }
 
 export default find;
