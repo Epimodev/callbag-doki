@@ -59,4 +59,25 @@ function intervalValues<T>(params: IntervalValuesParams<T>): Source<T> {
   };
 }
 
-export { intervalValues };
+function emptySource(duration: number): Source<any> {
+  // @ts-ignore
+  return (start: CallbagType, sink: Sink<T>) => {
+    if (start === CALLBAG_START) {
+      let timeout = 0;
+      let finished = false;
+      const talkback = (type: CallbagType) => {
+        if (type === CALLBAG_FINISHING && !finished) {
+          clearTimeout(timeout);
+        }
+      };
+      sink(CALLBAG_START, talkback);
+
+      timeout = setTimeout(() => {
+        finished = true;
+        sink(CALLBAG_FINISHING);
+      }, duration);
+    }
+  };
+}
+
+export { intervalValues, emptySource };
