@@ -70,6 +70,11 @@ describe('operators/tap', () => {
 
     setTimeout(() => {
       expect(func).toBeCalledTimes(values.length);
+      expect(func).nthCalledWith(1, values[0]);
+      expect(func).nthCalledWith(2, values[1]);
+      expect(func).nthCalledWith(3, values[2]);
+      expect(func).nthCalledWith(4, values[3]);
+      expect(func).nthCalledWith(5, values[4]);
 
       done();
     }, 300);
