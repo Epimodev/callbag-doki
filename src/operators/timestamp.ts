@@ -1,6 +1,5 @@
-import { Operator, Observer } from '../index';
-import { createSource } from '../sources';
-import subscribe from '../utils/subscribe';
+import { Operator } from '../index';
+import map from './map';
 
 interface TimestampValue<T> {
   value: T;
@@ -8,22 +7,10 @@ interface TimestampValue<T> {
 }
 
 function timestamp<I>(): Operator<I, TimestampValue<I>> {
-  return source => {
-    return createSource((next, complete, error) => {
-      const observer: Observer<I> = {
-        next: value => {
-          next({
-            value,
-            timestamp: Date.now(),
-          });
-        },
-        error,
-        complete,
-      };
-
-      return subscribe(source)(observer);
-    });
-  };
+  return map(value => ({
+    value,
+    timestamp: Date.now(),
+  }));
 }
 
 export default timestamp;
