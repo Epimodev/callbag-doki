@@ -8,6 +8,26 @@ interface Subject<T> {
   complete: () => void;
 }
 
+/**
+ * Create a subject
+ *
+ * @return a new subject
+ *
+ * ## Example
+ * ```ts
+ * import { createSubject } from 'callbag-doki/utils/subject';
+ *
+ * const mySubject = createSubject();
+ * mySubject.next(1); // nothing happens because there isn't any subscription
+ *
+ * const unsubscribe = mySubject.subscribe(value => console.log('Receive value: ', value));
+ *
+ * mySubject.next(2); // "Receive value: 2"
+ * mySubject.next(3); // "Receive value: 3"
+ * ```
+ *
+ * @public
+ */
 function createSubject<T>(): Subject<T> {
   const observers: Observer<T>[] = [];
 
@@ -52,6 +72,29 @@ function createSubject<T>(): Subject<T> {
   };
 }
 
+/**
+ * Create a behavior subject
+ *
+ * Each observer will receive the last received value by the subject on subscription
+ *
+ * @return a new behavior subject
+ *
+ * ## Example
+ * ```ts
+ * import { createBehaviorSubject } from 'callbag-doki/utils/subject';
+ *
+ * const mySubject = createBehaviorSubject();
+ * mySubject.next(1); // nothing happens because there isn't any subscription
+ * mySubject.next(2); // nothing happens because there isn't any subscription
+ *
+ * const unsubscribe = mySubject.subscribe(value => console.log('Receive value: ', value)); // "Receive value: 2"
+ *
+ * mySubject.next(3); // "Receive value: 3"
+ * mySubject.next(4); // "Receive value: 4"
+ * ```
+ *
+ * @public
+ */
 function createBehaviorSubject<T>(initialValue: T): Subject<T> {
   const subject = createSubject<T>();
   let lastValue: T = initialValue;
@@ -75,6 +118,31 @@ function createBehaviorSubject<T>(initialValue: T): Subject<T> {
   };
 }
 
+/**
+ * Create a replay subject
+ *
+ * Each observer will receive all received values by the subject on subscription
+ *
+ * @return a new replay subject
+ *
+ * ## Example
+ * ```ts
+ * import { createReplaySubject } from 'callbag-doki/utils/subject';
+ *
+ * const mySubject = createReplaySubject();
+ * mySubject.next(1); // nothing happens because there isn't any subscription
+ * mySubject.next(2); // nothing happens because there isn't any subscription
+ *
+ * const unsubscribe = mySubject.subscribe(value => console.log('Receive value: ', value));
+ * // "Receive value: 1"
+ * // "Receive value: 2"
+ *
+ * mySubject.next(3); // "Receive value: 3"
+ * mySubject.next(4); // "Receive value: 4"
+ * ```
+ *
+ * @public
+ */
 function createReplaySubject<T>(bufferSize = Infinity): Subject<T> {
   const subject = createSubject<T>();
   const values: T[] = [];
@@ -105,6 +173,36 @@ function createReplaySubject<T>(bufferSize = Infinity): Subject<T> {
   };
 }
 
+/**
+ * Create an async subject
+ *
+ * Each observer will receive the last value when subject is complete
+ *
+ * @return a new async subject
+ *
+ * ## Example
+ * ```ts
+ * import { createAsyncSubject } from 'callbag-doki/utils/subject';
+ *
+ * const mySubject = createAsyncSubject();
+ * mySubject.next(1); // nothing happens because there isn't any subscription
+ * mySubject.next(2); // nothing happens because there isn't any subscription
+ *
+ * const unsubscribe = mySubject.subscribe({
+ *   next: value => console.log('Receive value: ', value),
+ *   complete: () => console.log('Subject complete'),
+ * });
+ *
+ * mySubject.next(3); // nothing happens because subject isn't complete
+ * mySubject.next(4); // nothing happens because subject isn't complete
+ *
+ * mySubject.complete();
+ * // "Receive value: 4"
+ * // "Subject complete"
+ * ```
+ *
+ * @public
+ */
 function createAsyncSubject<T>(): Subject<T> {
   const subject = createSubject<T>();
   let lastValue: T | undefined = undefined;
@@ -124,6 +222,30 @@ function createAsyncSubject<T>(): Subject<T> {
   };
 }
 
+/**
+ * Create a subject which multicast a source
+ *
+ * The source will start only on the first subscription and will be cancel only when all subscription are canceled
+ *
+ * @return a behavior subject
+ *
+ * ## Example
+ * ```ts
+ * import { createMulticastedSource } from 'callbag-doki/utils/subject';
+ * import interval from 'callbag-doki/sources/interval';
+ *
+ * const multicastedInterval = createMulticastedSource(interval(1000));
+ *
+ * const unsubscribeFirst = multicastedInterval.subscribe(value => console.log('First receive: ', value)); // start interval
+ * const unsubscribeSecond = multicastedInterval.subscribe(value => console.log('Second receive: ', value)); // use the same interval
+ *
+ * unsubscribeFirst(); // first observable will not receive any value anymore, but interval isn't clear yet
+ *
+ * unsubscribeSecond(); // second observable will not receive any value anymore and the interval is clear
+ * ```
+ *
+ * @public
+ */
 function createMulticastedSource<T>(source: Source<T>): Subject<T> {
   const subject = createBehaviorSubject<T | undefined>(undefined);
   let count = 0;

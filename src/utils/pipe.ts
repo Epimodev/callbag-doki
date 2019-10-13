@@ -9,15 +9,15 @@ import { Source, Operator } from '../index';
  *
  * ## Example
  * ```ts
- * import pipeSource from 'callbag-doki/utils/pipe'
- * import interval from 'callbag-doki/sources/interval'
- * import map from 'callbag-doki/operators/map'
+ * import pipeSource from 'callbag-doki/utils/pipe';
+ * import interval from 'callbag-doki/sources/interval';
+ * import map from 'callbag-doki/operators/map';
  *
  * // this will create a source which send each second an integer multiplied by 2
  * pipeSource(
  *  interval(1000),
- *  map(value => value * 2)
- * )
+ *  map(value => value * 2),
+ * );
  * ```
  *
  * @public
