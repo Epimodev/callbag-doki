@@ -1,6 +1,14 @@
 import { Source } from '../index';
 import { createSource } from './';
 
+/**
+ * Converts params to an observable source
+ *
+ * @param values - values to convert
+ * @return callbag source
+ *
+ * @public
+ */
 function of<T>(...values: T[]): Source<T> {
   return createSource((next, complete) => {
     let finished = false;

@@ -1,6 +1,14 @@
 import { Source } from '../index';
 import mergePool from './mergePool';
 
+/**
+ * Create a source which sequentially emits values of each given sources
+ *
+ * @param sources - sources to observe sequentially
+ * @return callbag source
+ *
+ * @public
+ */
 function concat<T1>(s1: Source<T1>): Source<T1>;
 function concat<T1, T2>(s1: Source<T1>, s2: Source<T2>): Source<T1 | T2>;
 function concat<T1, T2, T3>(s1: Source<T1>, s2: Source<T2>, s3: Source<T3>): Source<T1 | T2 | T3>;

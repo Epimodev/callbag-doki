@@ -1,6 +1,16 @@
 import { Source } from '../index';
 import { createSource } from './';
 
+/**
+ * Create a source that listen events on html element or window
+ *
+ * @param target - event target
+ * @param eventType - type of the event to listen
+ * @param options - event listener options
+ * @return callbag source
+ *
+ * @public
+ */
 function fromEvent<K extends keyof WindowEventMap>(
   target: Window,
   eventType: K,

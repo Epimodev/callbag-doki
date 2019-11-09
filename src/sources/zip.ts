@@ -2,6 +2,15 @@ import { Source } from '../index';
 import subscribe from '../utils/subscribe';
 import { createSource } from './';
 
+/**
+ * Combines multiple sources to create a source whose values are calculated from the values, in order, of each of its input sources
+ *
+ * @param sources - sources to combine
+ * @param poolSize - max number of sources to run concurrently
+ * @return callbag source
+ *
+ * @public
+ */
 function zip<T1>(sources: [Source<T1>], poolSize?: number): Source<[T1]>;
 function zip<T1, T2>(sources: [Source<T1>, Source<T2>], poolSize?: number): Source<[T1, T2]>;
 function zip<T1, T2, T3>(

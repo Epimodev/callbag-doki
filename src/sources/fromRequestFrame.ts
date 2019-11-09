@@ -1,6 +1,14 @@
 import { Source } from '../index';
 import { createSource } from './';
 
+/**
+ * Create a source that emit a tick on request animation frame
+ *
+ * @param duration - in milliseconds, duration before stop request animation frame. If duration is 0 or not define, request animation frame will be stop only on unsubscribe
+ * @return callbag source
+ *
+ * @public
+ */
 function fromRequestFrame(duration?: number): Source<undefined> {
   return createSource((next, complete) => {
     let timeout = 0;

@@ -2,6 +2,16 @@ import { Source } from '../index';
 import subscribe from '../utils/subscribe';
 import { createSource } from './';
 
+/**
+ * Create a source which concurrently emits values of each given sources like merge but with a pool size limit
+ * For example there are 10 sources and size limit is 5, only 5 sources will be concurrently running. Each time a source complete, a new given source start
+ *
+ * @param sources - sources to observe concurrently
+ * @param size - pool size limit
+ * @return callbag source
+ *
+ * @public
+ */
 function mergePool<T = any>(sources: Source<T>[], size: number): Source<T> {
   return createSource((next, complete, error) => {
     const nbSources = sources.length;
