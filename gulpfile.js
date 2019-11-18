@@ -1,6 +1,5 @@
 const { src, dest, series } = require('gulp');
 const through2 = require('through2');
-const terser = require('gulp-terser');
 const shell = require('shelljs');
 
 const constants = [
@@ -34,11 +33,10 @@ const cleanJsFile = through2.obj(function(file, _, cb) {
   cb(null, file);
 });
 
-function minify() {
+function clean() {
   return (
     src('module/**/*.js')
       .pipe(cleanJsFile)
-      .pipe(terser({ module: true }))
       .pipe(dest('./module'))
   );
 }
@@ -62,4 +60,4 @@ function removePreviousBuild(cb) {
   cb();
 }
 
-exports.default = series(removePreviousBuild, minify, moveBuild);
+exports.default = series(removePreviousBuild, clean, moveBuild);
