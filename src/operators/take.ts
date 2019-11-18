@@ -2,7 +2,15 @@ import { Operator, Observer, Unsubscribe } from '../index';
 import { createSource } from '../sources';
 import subscribe from '../utils/subscribe';
 
-function take<I>(max: number): Operator<I, I> {
+/**
+ * Emits only the first values emitted by the source
+ *
+ * @param count - number of values to emit
+ * @return callbag operator
+ *
+ * @public
+ */
+function take<I>(count: number): Operator<I, I> {
   return source => {
     return createSource((next, complete, error) => {
       let taken = 0;
@@ -13,7 +21,7 @@ function take<I>(max: number): Operator<I, I> {
           next(value);
 
           taken += 1;
-          if (taken >= max) {
+          if (taken >= count) {
             unsubscribe();
             complete();
           }

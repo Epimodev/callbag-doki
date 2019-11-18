@@ -2,6 +2,14 @@ import { Operator, Observer, Unsubscribe } from '../index';
 import { createSource } from '../sources';
 import subscribe from '../utils/subscribe';
 
+/**
+ * Returns a source that will resubscribe to the initial source when it completes, at most count times
+ *
+ * @param count - number of times the source items are repeated
+ * @return callbag operator
+ *
+ * @public
+ */
 function repeat<I>(count: number): Operator<I, I> {
   return source => {
     return createSource((next, complete, error) => {

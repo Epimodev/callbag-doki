@@ -2,6 +2,14 @@ import { Source, Operator, Observer } from '../index';
 import { createSource } from '../sources';
 import subscribe from '../utils/subscribe';
 
+/**
+ * Buffers the source values until closingNotifier emits
+ *
+ * @param closeNotifier - callbag source that signals the buffer to be emitted on the output source
+ * @return callbag operator
+ *
+ * @public
+ */
 function buffer<I>(closeNotifier: Source<any>): Operator<I, I[]> {
   return source => {
     return createSource((next, complete, error) => {

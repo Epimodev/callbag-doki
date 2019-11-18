@@ -2,6 +2,15 @@ import { Operator, Observer } from '../index';
 import { createSource } from '../sources';
 import subscribe from '../utils/subscribe';
 
+/**
+ * Buffers the source values until the size hits the maximum bufferSize given
+ *
+ * @param bufferSize - maximum size of the buffer emitted
+ * @param startBufferEvery - interval at which to start a new buffer
+ * @return callbag operator
+ *
+ * @public
+ */
 function bufferCount<I>(bufferSize: number, startBufferEvery = bufferSize): Operator<I, I[]> {
   return source => {
     return createSource((next, complete, error) => {

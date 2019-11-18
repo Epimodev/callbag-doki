@@ -2,6 +2,14 @@ import { Source, Operator, Observer, Unsubscribe } from '../index';
 import { createSource } from '../sources';
 import subscribe from '../utils/subscribe';
 
+/**
+ * Projects each source value to a source which is merged in the output source, emitting values only from the most recently projected source
+ *
+ * @param mapper - function which transform item emitted by the source to a new source
+ * @return callbag operator
+ *
+ * @public
+ */
 function switchMap<I, O>(mapper: (value: I) => Source<O>): Operator<I, O> {
   return source => {
     return createSource((next, complete, error) => {

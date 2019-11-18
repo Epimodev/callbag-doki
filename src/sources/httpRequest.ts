@@ -71,6 +71,14 @@ function getResponseHeaders(xhr: XMLHttpRequest): { [key: string]: string } {
   return headerMap;
 }
 
+/**
+ * Create a source which send an http request
+ *
+ * @param params - request params
+ * @return callbag source
+ *
+ * @public
+ */
 function httpRequest<T = any>(params: RequestParams): Source<RequestResponse<T>> {
   return createSource((next, complete, error) => {
     const { url, method = 'GET', headers, query, body, responseType = 'json', cache } = params;

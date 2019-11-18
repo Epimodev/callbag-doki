@@ -15,6 +15,14 @@ function plucker(properties: string[]) {
   };
 }
 
+/**
+ * Maps each source value (an object) to its specified nested property
+ *
+ * @param properties - nested properties to pluck from each source value
+ * @return callbag operator
+ *
+ * @public
+ */
 function pluck<T, K1 extends keyof T>(k1: K1): Operator<T, T[K1]>;
 function pluck<T, K1 extends keyof T, K2 extends keyof T[K1]>(
   k1: K1,

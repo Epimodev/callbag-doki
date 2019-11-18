@@ -6,6 +6,14 @@ interface MappedSubscription {
   unsubscribe?: () => void;
 }
 
+/**
+ * Projects each source value to a source which is merged in the output source
+ *
+ * @param mapper - function which transform item emitted by the source to a new source
+ * @return callbag operator
+ *
+ * @public
+ */
 function flatMap<I, O>(mapper: (value: I) => Source<O>): Operator<I, O> {
   return source => {
     return createSource((next, complete, error) => {

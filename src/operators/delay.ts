@@ -2,6 +2,14 @@ import { Operator, Observer } from '../index';
 import { createSource } from '../sources';
 import subscribe from '../utils/subscribe';
 
+/**
+ * Delays the emission of items from the source by a given timeout
+ *
+ * @param duration - delay duration in milliseconds
+ * @return callbag operator
+ *
+ * @public
+ */
 function delay<I>(duration: number): Operator<I, I> {
   return source => {
     return createSource((next, complete, error) => {

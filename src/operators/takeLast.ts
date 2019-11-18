@@ -2,6 +2,14 @@ import { Operator, Observer } from '../index';
 import { createSource } from '../sources';
 import subscribe from '../utils/subscribe';
 
+/**
+ * Emits only the last count values emitted by the source
+ *
+ * @param count - number of values to emit
+ * @return callbag operator
+ *
+ * @public
+ */
 function takeLast<I>(count = 1): Operator<I, I> {
   return source => {
     return createSource((next, complete, error) => {

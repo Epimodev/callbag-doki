@@ -12,6 +12,15 @@ const defaultThrottleConfig: ThrottleConfig = {
   trailing: false,
 };
 
+/**
+ * Emits a value from the source, then ignores subsequent source values for duration milliseconds, then repeats this process
+ *
+ * @param duration - time in milliseconds to wait before emitting another value after emitting the last value
+ * @param config - a configuration object to define leading and trailing behavior. Defaults to `{ leading: true, trailing: false }`
+ * @return callbag operator
+ *
+ * @public
+ */
 function throttle<I>(
   duration: number,
   { leading, trailing } = defaultThrottleConfig,
