@@ -29,7 +29,9 @@
     "test": "jest",
     "lint": "tslint -c tslint.json 'src/**/*.ts?(x)'",
     "check-types": "tsc --noEmit",
-    "check-format": "prettier --list-different 'src/**/*.ts?(x)'"
+    "check-format": "prettier --list-different 'src/**/*.ts?(x)'",
+    "prepublish": "yarn check-format && yarn lint && yarn check-types && yarn test",
+    "prepare": "yarn build"
   },
   "husky": {
     "hooks": {
