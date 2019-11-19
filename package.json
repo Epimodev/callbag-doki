@@ -1,5 +1,5 @@
 {
-  "name": "callbag-doki",
+  "name": "@epimodev/callbag-doki",
   "version": "0.1.0",
   "description": "lib to create observable and iterable based on callbag specs",
   "author": "Frederic Godin",
@@ -14,7 +14,6 @@
     "typescript"
   ],
   "files": [
-    "src",
     "operators",
     "sources",
     "utils",
