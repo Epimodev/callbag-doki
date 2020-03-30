@@ -1,6 +1,6 @@
 {
   "name": "@epimodev/callbag-doki",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "lib to create observable and iterable based on callbag specs",
   "author": "Frederic Godin",
   "license": "MIT",
